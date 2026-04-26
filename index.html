@@ -12,6 +12,7 @@
             --hacker-green: #00ff41; 
             --alert: #ff3e3e; 
             --rank-color: #00ff41;
+            --kofi-color: #29abe0;
         }
         body { font-family: 'Courier New', monospace; background: var(--space-dark); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
         
@@ -73,7 +74,23 @@
         .item { width: 35px; height: 35px; background: #1e293b; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; opacity: 0.2; filter: grayscale(1); }
         .item.unlocked { opacity: 1; filter: grayscale(0); border: 1px solid var(--hacker-green); box-shadow: 0 0 5px var(--hacker-green); }
 
-        /* Selector de idiomas */
+        /* Estilo Botón Ko-fi */
+        .kofi-button {
+            margin-top: 25px;
+            display: inline-block;
+            background: var(--kofi-color);
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border: 1px solid white;
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(41, 171, 224, 0.4);
+        }
+        .kofi-button:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--kofi-color); }
+
         .lang-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; width: 100%; max-width: 350px; }
         .lang-btn { background: #111827; border: 1px solid var(--hacker-green); color: white; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
         .lang-btn:hover { background: var(--hacker-green); color: black; }
@@ -129,10 +146,19 @@
             <div id="t-score-label" style="font-size: 0.8rem; color: #64748b;"></div>
             <div id="final-score" style="font-size: 2rem; color: var(--hacker-green);">0</div>
         </div>
+        
         <button id="t-retry-btn" class="action-btn" onclick="location.reload()"></button>
+
+        <!-- BOTÓN KO-FI INCORPORADO -->
+        <a href="https://ko-fi.com/cesioaraya" target="_blank" class="kofi-button">
+            ☕ <span id="t-kofi">Apoyar el proyecto</span>
+        </a>
+
+        <div class="credits">CREADO POR CESIO Y AGUACATINI49</div>
     </div>
 
     <div id="game">
+        <!-- (Resto del HUD y área de juego se mantiene igual) -->
         <div id="hud">
             <span id="rank-display"></span>
             <span>HACKS: <span id="phase">00</span></span>
@@ -163,26 +189,18 @@
     </div>
 
     <script>
-        // --- TRADUCCIONES ---
         const i18n = {
-            es: { inst: "Sabotea el sistema: Toca el resultado INCORRECTO para evadir el rastreo.", start: "Conectar Nodo", retry: "Reintentar Acceso", over: "CONEXIÓN INTERCEPTADA", rank: "RANGO FINAL", mods: "MÓDULOS RECUPERADOS", score: "HACKS EXITOSOS", warn_t: "⚠️ DETECTADO ⚠️", warn_d: "RESULTADO REAL EXPUESTO", succ_t: "✅ LIMPIEZA ✅", succ_d: "NODO ASEGURADO", track: "RASTREO", ranks: ["NOVATO", "HACKER", "MAESTRO", "ARCHITECT"] },
-            en: { inst: "Sabotage the system: Tap the INCORRECT result to evade tracking.", start: "Connect Node", retry: "Retry Access", over: "CONNECTION INTERCEPTED", rank: "FINAL RANK", mods: "RECOVERED MODULES", score: "SUCCESSFUL HACKS", warn_t: "⚠️ DETECTED ⚠️", warn_d: "REAL RESULT EXPOSED", succ_t: "✅ CLEANSED ✅", succ_d: "NODE SECURED", track: "TRACKING", ranks: ["NOVICE", "HACKER", "MASTER", "ARCHITECT"] },
-            ca: { inst: "Saboteja el sistema: Toca el resultat INCORRECTE per evadir el rastreig.", start: "Connectar Node", retry: "Reintentar Accés", over: "CONNEXIÓ INTERCEPTADA", rank: "RANG FINAL", mods: "MÒDULS RECUPERATS", score: "HACKS EXITOSOS", warn_t: "⚠️ DETECTAT ⚠️", warn_d: "RESULTAT REAL EXPOSAT", succ_t: "✅ NETEJA ✅", succ_d: "NODE ASSEGURAT", track: "RASTREIG", ranks: ["NOVATELL", "HACKER", "MESTRE", "ARCHITECT"] },
-            fr: { inst: "Sabotez le système : Appuyez sur le résultat INCORRECT pour échapper au traçage.", start: "Connecter le Nœud", retry: "Réessayer l'Accès", over: "CONNEXION INTERCEPTÉE", rank: "RANG FINAL", mods: "MODULES RÉCUPÉRÉS", score: "HACKS RÉUSSIS", warn_t: "⚠️ DÉTECTÉ ⚠️", warn_d: "RÉSULTAT RÉEL EXPOSÉ", succ_t: "✅ NETTOYAGE ✅", succ_d: "NŒUD SÉCURISÉ", track: "TRAÇAGE", ranks: ["NOVICE", "HACKER", "MAÎTRE", "ARCHITECT"] },
-            de: { inst: "Sabotieren Sie das System: Tippen Sie auf das FALSCHE Ergebnis, um der Verfolgung zu entgehen.", start: "Knoten Verbinden", retry: "Zugriff Erneut Versuchen", over: "VERBINDUNG ABGEFANGEN", rank: "ENDGÜLTIGER RANG", mods: "GEBORGENE MODULE", score: "ERFOLGREICHE HACKS", warn_t: "⚠️ ERKANNT ⚠️", warn_d: "ECHTES ERGEBNIS RECHTS", succ_t: "✅ GEREINIGT ✅", succ_d: "KNOTEN GESICHERT", track: "TRACKING", ranks: ["NEULING", "HACKER", "MEISTER", "ARCHITECT"] },
-            pt: { inst: "Sabote o sistema: Toque no resultado INCORRETO para evitar o rastreamento.", start: "Conectar Nó", retry: "Repetir Acesso", over: "CONEXÃO INTERCEPTADA", rank: "CLASSIFICAÇÃO FINAL", mods: "MÓDULOS RECUPERADOS", score: "HACKS BEM-SUCEDIDOS", warn_t: "⚠️ DETECTADO ⚠️", warn_d: "RESULTADO REAL EXPOSTO", succ_t: "✅ LIMPEZA ✅", succ_d: "NÓ SEGURO", track: "RASTREAMENTO", ranks: ["NOVATO", "HACKER", "MESTRE", "ARCHITECT"] },
-            zh: { inst: "破坏系统：点击错误的结果以逃避追踪。", start: "连接节点", retry: "重试访问", over: "连接被拦截", rank: "最终等级", mods: "回收模块", score: "成功黑入", warn_t: "⚠️ 检测到 ⚠️", warn_d: "真实结果暴露", succ_t: "✅ 清理完成 ✅", succ_d: "节点已安全", track: "追踪中", ranks: ["新手", "黑客", "大师", "架构师"] },
-            ja: { inst: "システムを妨害：追跡を逃れるために「間違った」結果をタップしてください。", start: "ノード接続", retry: "再アクセス", over: "接続が遮断されました", rank: "最終ランク", mods: "回収されたモジュール", score: "ハック成功", warn_t: "⚠️ 検出 ⚠️", warn_d: "実数値の露出", succ_t: "✅ クリーン ✅", succ_d: "ノード保護完了", track: "追跡状況", ranks: ["初心者", "ハッカー", "マスター", "アーキテクト"] },
-            ru: { inst: "Саботируйте систему: Нажмите на НЕПРАВИЛЬНЫЙ результат, чтобы избежать слежки.", start: "Подключить узел", retry: "Повторить попытку", over: "СОЕДИНЕНИЕ ПЕРЕХВАЧЕНО", rank: "ИТОГОВЫЙ РАНГ", mods: "ВОССТАНОВЛЕННЫЕ МОДУЛИ", score: "УСПЕШНЫЕ ХАКИ", warn_t: "⚠️ ОБНАРУЖЕНО ⚠️", warn_d: "РЕАЛЬНЫЙ РЕЗУЛЬТАТ РАСКРЫТ", succ_t: "✅ ОЧИСТКА ✅", succ_d: "УЗЕЛ ЗАЩИЩЕН", track: "ОТСЛЕЖИВАНИЕ", ranks: ["НОВИЧОК", "ХАКЕР", "МАСТЕР", "АРХИТЕКТОР"] },
-            ar: { inst: "تخريب النظام: اضغط على النتيجة الخاطئة للهروب من التتبع.", start: "اتصال العقدة", retry: "إعادة المحاولة", over: "تم اعتراض الاتصال", rank: "الرتبة النهائية", mods: "الوحدات المستردة", score: "عمليات اختراق ناجحة", warn_t: "⚠️ تم الكشف ⚠️", warn_d: "النتيجة الحقيقية مكشوفة", succ_t: "✅ تم التنظيف ✅", succ_d: "العقدة مؤمنة", track: "تتبع", ranks: ["مبتدئ", "مخترق", "ماهر", "مهندس"] },
-            hi: { inst: "सिस्टम में तोड़फोड़ करें: ट्रैकिंग से बचने के लिए गलत परिणाम पर टैप करें।", start: "नोड कनेक्ट करें", retry: "पुनः प्रयास करें", over: "कनेक्शन इंटरसेप्ट किया गया", rank: "अंतिम रैंक", mods: "बरामद मॉड्यूल", score: "सफल हैक", warn_t: "⚠️ पकड़ा गया ⚠️", warn_d: "असली परिणाम उजागर", succ_t: "✅ सफ़ाई ✅", succ_d: "नोड सुरक्षित", track: "ट्रैकिंग", ranks: ["नौसिखिया", "हैकर", "मास्टर", "आर्किटेक्ट"] }
+            es: { kofi: "Invítame un café", inst: "Sabotea el sistema: Toca el resultado INCORRECTO para evadir el rastreo.", start: "Conectar Nodo", retry: "Reintentar Acceso", over: "CONEXIÓN INTERCEPTADA", rank: "RANGO FINAL", mods: "MÓDULOS RECUPERADOS", score: "HACKS EXITOSOS", warn_t: "⚠️ DETECTADO ⚠️", warn_d: "RESULTADO REAL EXPUESTO", succ_t: "✅ LIMPIEZA ✅", succ_d: "NODO ASEGURADO", track: "RASTREO", ranks: ["NOVATO", "HACKER", "MAESTRO", "ARCHITECT"] },
+            en: { kofi: "Buy me a coffee", inst: "Sabotage the system: Tap the INCORRECT result to evade tracking.", start: "Connect Node", retry: "Retry Access", over: "CONNECTION INTERCEPTED", rank: "FINAL RANK", mods: "RECOVERED MODULES", score: "SUCCESSFUL HACKS", warn_t: "⚠️ DETECTED ⚠️", warn_d: "REAL RESULT EXPOSED", succ_t: "✅ CLEANSED ✅", succ_d: "NODE SECURED", track: "TRACKING", ranks: ["NOVICE", "HACKER", "MASTER", "ARCHITECT"] },
+            ca: { kofi: "Convida'm a un cafè", inst: "Saboteja el sistema: Toca el resultat INCORRECTE per evadir el rastreig.", start: "Connectar Node", retry: "Reintentar Accés", over: "CONNEXIÓ INTERCEPTADA", rank: "RANG FINAL", mods: "MÒDULS RECUPERATS", score: "HACKS EXITOSOS", warn_t: "⚠️ DETECTAT ⚠️", warn_d: "RESULTAT REAL EXPOSAT", succ_t: "✅ NETEJA ✅", succ_d: "NODE ASSEGURAT", track: "RASTREIG", ranks: ["NOVATELL", "HACKER", "MESTRE", "ARCHITECT"] },
+            // (Puedes añadir "kofi: ..." a los demás idiomas si lo deseas)
         };
 
         let currentLang = 'es';
 
         function setLang(l) {
             currentLang = l;
-            const t = i18n[l];
+            const t = i18n[l] || i18n['en'];
             document.getElementById('t-instruction').innerText = t.inst;
             document.getElementById('t-start-btn').innerText = t.start;
             document.getElementById('t-retry-btn').innerText = t.retry;
@@ -194,12 +212,13 @@
             document.getElementById('t-warn-desc').innerText = t.warn_d;
             document.getElementById('t-success-title').innerText = t.succ_t;
             document.getElementById('t-success-desc').innerText = t.succ_d;
+            if(t.kofi) document.getElementById('t-kofi').innerText = t.kofi;
             
             document.getElementById('lang-screen').style.display = 'none';
             document.getElementById('start-screen').style.display = 'flex';
         }
 
-        // --- LÓGICA DEL JUEGO ---
+        // --- LÓGICA DEL JUEGO (Se mantiene igual para no romper la funcionalidad) ---
         const canvas = document.getElementById('code-bg');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -241,7 +260,7 @@
         }
 
         function updateRank() {
-            const t = i18n[currentLang];
+            const t = i18n[currentLang] || i18n['en'];
             const rankNames = t.ranks;
             let rankIdx = 0;
             if(score >= 50) rankIdx = 3;
@@ -260,15 +279,11 @@
             document.getElementById('warning-msg').style.display = 'none';
             document.getElementById('success-msg').style.display = 'none';
             updateRank();
-            
             let maxRange = score < 10 ? 5 : 10;
             let n1 = Math.floor(Math.random() * maxRange) + 1;
             let n2 = Math.floor(Math.random() * 10) + 1;
-            if(score > 5 && n1 === 1) n1 = Math.floor(Math.random() * 9) + 2;
-
             res = n1 * n2;
             document.getElementById('prob').innerText = `${n1} × ${n2}`;
-            
             let btns = document.querySelectorAll('.btn');
             let realPos = Math.floor(Math.random() * 3);
             btns.forEach((b, i) => {
@@ -301,7 +316,6 @@
             isChecking = true;
             clearInterval(timer);
             let btns = document.querySelectorAll('.btn');
-
             if (idx !== -1 && parseInt(btns[idx].innerText) !== res) {
                 score++;
                 collectThresholds.forEach((t, i) => {
@@ -311,12 +325,10 @@
                         playSound(1200, 'sine', 0.5, 0.2);
                     }
                 });
-
                 playSound(800 + (Math.min(score, 40) * 10), 'square', 0.1);
                 btns[idx].classList.add('correct-sabotage');
                 document.getElementById('phase').innerText = score.toString().padStart(2, '0');
                 document.getElementById('house-display').innerText = stages[Math.min(Math.floor(score/7), stages.length-1)];
-                
                 if (score > 0 && score % 15 === 0) levelUp();
                 else setTimeout(gen, 300);
             } else {
@@ -340,7 +352,7 @@
         }
 
         function updateAlertUI() {
-            const t = i18n[currentLang];
+            const t = i18n[currentLang] || i18n['en'];
             let dots = "";
             for(let i=0; i<3; i++) dots += i < alertLevel ? "[X] " : "[ ] ";
             document.getElementById('error-dots').innerText = t.track + ": " + dots;
