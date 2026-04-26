@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Protocolo Architect: Master</title>
+    <style>
+        :root { 
+            --neon-blue: #00d4ff; 
+            --neon-pink: #ff007f; 
+            --space-dark: #050a14; 
+            --hacker-green: #00ff41; 
+            --alert: #ff3e3e; 
+            --rank-color: #00ff41;
+        }
+        body { font-family: 'Courier New', monospace; background: var(--space-dark); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
+        
+        #code-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; pointer-events: none; }
+
+        #game { 
+            display: none;
+            background: rgba(10, 15, 26, 0.95); 
+            width: 90%; max-width: 400px; padding: 20px; 
+            border-radius: 20px; border: 3px solid var(--rank-color); 
+            position: relative; z-index: 10; text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+        }
+        
+        #hud { display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--rank-color); font-size: 0.8rem; font-weight: bold; }
+        
+        #construction-area { 
+            height: 140px; background: #000; border-radius: 15px; 
+            margin-bottom: 20px; display: flex; align-items: center; 
+            justify-content: center; position: relative; overflow: hidden;
+            border: 1px solid var(--rank-color);
+        }
+        
+        #house-display { font-size: 4rem; z-index: 5; transition: transform 0.3s; }
+        
+        .overlay-msg { 
+            position: absolute; inset: 0; display: none; 
+            flex-direction: column; align-items: center; 
+            justify-content: center; z-index: 50; padding: 10px;
+            font-weight: bold;
+        }
+        #warning-msg { background: rgba(255, 62, 62, 0.95); color: white; }
+        #success-msg { background: var(--neon-blue); color: #000; }
+
+        #timer-bar { width: 100%; height: 8px; background: #1e293b; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
+        #timer-fill { height: 100%; background: var(--neon-pink); width: 100%; box-shadow: 0 0 10px var(--neon-pink); }
+        
+        #prob { font-size: 3.5rem; font-weight: 900; color: var(--hacker-green); margin: 5px 0; text-shadow: 0 0 10px var(--hacker-green); }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .btn { 
+            padding: 20px 5px; font-size: 1.8rem; border: none; border-radius: 12px; 
+            background: #111827; color: var(--hacker-green); cursor: pointer; 
+            border: 1px solid #1e293b; font-family: 'Courier New', monospace;
+            transition: 0.2s;
+        }
+
+        .correct-sabotage { background: #064e3b !important; border-color: var(--hacker-green) !important; color: white; }
+        .alien-logic { background: var(--alert) !important; color: white !important; animation: shake 0.3s infinite; }
+        
+        @keyframes shake { 0%, 100% {transform:translateX(0)} 25% {transform:translateX(4px)} 75% {transform:translateX(-4px)} }
+
+        .overlay-screen { position: fixed; inset: 0; background: var(--space-dark); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
+        .action-btn { padding: 15px 40px; background: var(--hacker-green); color: black; font-weight: bold; border: none; border-radius: 8px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 0 15px var(--hacker-green); margin-top: 20px; text-transform: uppercase; }
+        
+        .stat-box { margin: 15px 0; color: white; border: 1px solid #1e293b; padding: 15px; border-radius: 10px; background: rgba(255,255,255,0.05); width: 250px; }
+        
+        #collection { display: flex; gap: 5px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+        .item { width: 35px; height: 35px; background: #1e293b; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; opacity: 0.2; filter: grayscale(1); }
+        .item.unlocked { opacity: 1; filter: grayscale(0); border: 1px solid var(--hacker-green); box-shadow: 0 0 5px var(--hacker-green); }
+
+        /* Selector de idiomas */
+        .lang-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; width: 100%; max-width: 350px; }
+        .lang-btn { background: #111827; border: 1px solid var(--hacker-green); color: white; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+        .lang-btn:hover { background: var(--hacker-green); color: black; }
+
+        .credits { font-size: 0.7rem; color: #4b5563; margin-top: 25px; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <canvas id="code-bg"></canvas>
+
+    <!-- PANTALLA DE IDIOMA -->
+    <div id="lang-screen" class="overlay-screen">
+        <h2 style="color: var(--hacker-green);">SELECT LANGUAGE</h2>
+        <div class="lang-grid">
+            <button class="lang-btn" onclick="setLang('es')">Español</button>
+            <button class="lang-btn" onclick="setLang('en')">English</button>
+            <button class="lang-btn" onclick="setLang('ca')">Català</button>
+            <button class="lang-btn" onclick="setLang('fr')">Français</button>
+            <button class="lang-btn" onclick="setLang('de')">Deutsch</button>
+            <button class="lang-btn" onclick="setLang('pt')">Português</button>
+            <button class="lang-btn" onclick="setLang('zh')">中文</button>
+            <button class="lang-btn" onclick="setLang('ja')">日本語</button>
+            <button class="lang-btn" onclick="setLang('ru')">Русский</button>
+            <button class="lang-btn" onclick="setLang('ar')">العربية</button>
+            <button class="lang-btn" onclick="setLang('hi')">हिन्दी</button>
+        </div>
+        <div class="credits">CREADO POR CESIO Y AGUACATINI49</div>
+    </div>
+
+    <!-- PANTALLA DE INICIO -->
+    <div id="start-screen" class="overlay-screen" style="display: none;">
+        <h1 style="color: var(--hacker-green); letter-spacing: 4px;">ARCHITECT OS</h1>
+        <p id="t-instruction" style="max-width: 300px; line-height: 1.5;"></p>
+        <button id="t-start-btn" class="action-btn" onclick="startGame()"></button>
+        <div class="credits">CREADO POR CESIO Y AGUACATINI49</div>
+    </div>
+
+    <!-- PANTALLA FINAL -->
+    <div id="end-screen" class="overlay-screen" style="display: none;">
+        <h1 id="t-gameover" style="color: var(--alert);"></h1>
+        <div class="stat-box">
+            <div id="t-final-rank-label" style="font-size: 0.8rem; color: #64748b;"></div>
+            <div id="final-rank" style="font-size: 1.5rem; font-weight: bold; margin: 5px 0;">-</div>
+            <hr style="border: 0; border-top: 1px solid #1e293b; margin: 10px 0;">
+            <div id="t-mods-label" style="font-size: 0.8rem; color: #64748b;"></div>
+            <div id="collection">
+                <div class="item">🔋</div><div class="item">🔥</div><div class="item">🛡️</div>
+                <div class="item">📡</div><div class="item">🧠</div><div class="item">🔫</div>
+            </div>
+            <hr style="border: 0; border-top: 1px solid #1e293b; margin: 10px 0;">
+            <div id="t-score-label" style="font-size: 0.8rem; color: #64748b;"></div>
+            <div id="final-score" style="font-size: 2rem; color: var(--hacker-green);">0</div>
+        </div>
+        <button id="t-retry-btn" class="action-btn" onclick="location.reload()"></button>
+    </div>
+
+    <div id="game">
+        <div id="hud">
+            <span id="rank-display"></span>
+            <span>HACKS: <span id="phase">00</span></span>
+        </div>
+
+        <div id="construction-area">
+            <div id="house-display">🛰️</div>
+            <div id="warning-msg" class="overlay-msg">
+                <span id="t-warn-title" style="font-size: 1.5rem;"></span>
+                <p id="t-warn-desc"></p>
+            </div>
+            <div id="success-msg" class="overlay-msg">
+                <span id="t-success-title" style="font-size: 1.5rem;"></span>
+                <p id="t-success-desc"></p>
+            </div>
+        </div>
+
+        <div id="timer-bar"><div id="timer-fill"></div></div>
+        <div id="prob">? x ?</div>
+
+        <div class="grid">
+            <button class="btn" onclick="check(0)"></button>
+            <button class="btn" onclick="check(1)"></button>
+            <button class="btn" onclick="check(2)"></button>
+        </div>
+        
+        <div id="error-dots" style="margin-top:15px; color:var(--alert); font-size:0.9rem; font-weight: bold;"></div>
+    </div>
+
+    <script>
+        // --- TRADUCCIONES ---
+        const i18n = {
+            es: { inst: "Sabotea el sistema: Toca el resultado INCORRECTO para evadir el rastreo.", start: "Conectar Nodo", retry: "Reintentar Acceso", over: "CONEXIÓN INTERCEPTADA", rank: "RANGO FINAL", mods: "MÓDULOS RECUPERADOS", score: "HACKS EXITOSOS", warn_t: "⚠️ DETECTADO ⚠️", warn_d: "RESULTADO REAL EXPUESTO", succ_t: "✅ LIMPIEZA ✅", succ_d: "NODO ASEGURADO", track: "RASTREO", ranks: ["NOVATO", "HACKER", "MAESTRO", "ARCHITECT"] },
+            en: { inst: "Sabotage the system: Tap the INCORRECT result to evade tracking.", start: "Connect Node", retry: "Retry Access", over: "CONNECTION INTERCEPTED", rank: "FINAL RANK", mods: "RECOVERED MODULES", score: "SUCCESSFUL HACKS", warn_t: "⚠️ DETECTED ⚠️", warn_d: "REAL RESULT EXPOSED", succ_t: "✅ CLEANSED ✅", succ_d: "NODE SECURED", track: "TRACKING", ranks: ["NOVICE", "HACKER", "MASTER", "ARCHITECT"] },
+            ca: { inst: "Saboteja el sistema: Toca el resultat INCORRECTE per evadir el rastreig.", start: "Connectar Node", retry: "Reintentar Accés", over: "CONNEXIÓ INTERCEPTADA", rank: "RANG FINAL", mods: "MÒDULS RECUPERATS", score: "HACKS EXITOSOS", warn_t: "⚠️ DETECTAT ⚠️", warn_d: "RESULTAT REAL EXPOSAT", succ_t: "✅ NETEJA ✅", succ_d: "NODE ASSEGURAT", track: "RASTREIG", ranks: ["NOVATELL", "HACKER", "MESTRE", "ARCHITECT"] },
+            fr: { inst: "Sabotez le système : Appuyez sur le résultat INCORRECT pour échapper au traçage.", start: "Connecter le Nœud", retry: "Réessayer l'Accès", over: "CONNEXION INTERCEPTÉE", rank: "RANG FINAL", mods: "MODULES RÉCUPÉRÉS", score: "HACKS RÉUSSIS", warn_t: "⚠️ DÉTECTÉ ⚠️", warn_d: "RÉSULTAT RÉEL EXPOSÉ", succ_t: "✅ NETTOYAGE ✅", succ_d: "NŒUD SÉCURISÉ", track: "TRAÇAGE", ranks: ["NOVICE", "HACKER", "MAÎTRE", "ARCHITECT"] },
+            de: { inst: "Sabotieren Sie das System: Tippen Sie auf das FALSCHE Ergebnis, um der Verfolgung zu entgehen.", start: "Knoten Verbinden", retry: "Zugriff Erneut Versuchen", over: "VERBINDUNG ABGEFANGEN", rank: "ENDGÜLTIGER RANG", mods: "GEBORGENE MODULE", score: "ERFOLGREICHE HACKS", warn_t: "⚠️ ERKANNT ⚠️", warn_d: "ECHTES ERGEBNIS RECHTS", succ_t: "✅ GEREINIGT ✅", succ_d: "KNOTEN GESICHERT", track: "TRACKING", ranks: ["NEULING", "HACKER", "MEISTER", "ARCHITECT"] },
+            pt: { inst: "Sabote o sistema: Toque no resultado INCORRETO para evitar o rastreamento.", start: "Conectar Nó", retry: "Repetir Acesso", over: "CONEXÃO INTERCEPTADA", rank: "CLASSIFICAÇÃO FINAL", mods: "MÓDULOS RECUPERADOS", score: "HACKS BEM-SUCEDIDOS", warn_t: "⚠️ DETECTADO ⚠️", warn_d: "RESULTADO REAL EXPOSTO", succ_t: "✅ LIMPEZA ✅", succ_d: "NÓ SEGURO", track: "RASTREAMENTO", ranks: ["NOVATO", "HACKER", "MESTRE", "ARCHITECT"] },
+            zh: { inst: "破坏系统：点击错误的结果以逃避追踪。", start: "连接节点", retry: "重试访问", over: "连接被拦截", rank: "最终等级", mods: "回收模块", score: "成功黑入", warn_t: "⚠️ 检测到 ⚠️", warn_d: "真实结果暴露", succ_t: "✅ 清理完成 ✅", succ_d: "节点已安全", track: "追踪中", ranks: ["新手", "黑客", "大师", "架构师"] },
+            ja: { inst: "システムを妨害：追跡を逃れるために「間違った」結果をタップしてください。", start: "ノード接続", retry: "再アクセス", over: "接続が遮断されました", rank: "最終ランク", mods: "回収されたモジュール", score: "ハック成功", warn_t: "⚠️ 検出 ⚠️", warn_d: "実数値の露出", succ_t: "✅ クリーン ✅", succ_d: "ノード保護完了", track: "追跡状況", ranks: ["初心者", "ハッカー", "マスター", "アーキテクト"] },
+            ru: { inst: "Саботируйте систему: Нажмите на НЕПРАВИЛЬНЫЙ результат, чтобы избежать слежки.", start: "Подключить узел", retry: "Повторить попытку", over: "СОЕДИНЕНИЕ ПЕРЕХВАЧЕНО", rank: "ИТОГОВЫЙ РАНГ", mods: "ВОССТАНОВЛЕННЫЕ МОДУЛИ", score: "УСПЕШНЫЕ ХАКИ", warn_t: "⚠️ ОБНАРУЖЕНО ⚠️", warn_d: "РЕАЛЬНЫЙ РЕЗУЛЬТАТ РАСКРЫТ", succ_t: "✅ ОЧИСТКА ✅", succ_d: "УЗЕЛ ЗАЩИЩЕН", track: "ОТСЛЕЖИВАНИЕ", ranks: ["НОВИЧОК", "ХАКЕР", "МАСТЕР", "АРХИТЕКТОР"] },
+            ar: { inst: "تخريب النظام: اضغط على النتيجة الخاطئة للهروب من التتبع.", start: "اتصال العقدة", retry: "إعادة المحاولة", over: "تم اعتراض الاتصال", rank: "الرتبة النهائية", mods: "الوحدات المستردة", score: "عمليات اختراق ناجحة", warn_t: "⚠️ تم الكشف ⚠️", warn_d: "النتيجة الحقيقية مكشوفة", succ_t: "✅ تم التنظيف ✅", succ_d: "العقدة مؤمنة", track: "تتبع", ranks: ["مبتدئ", "مخترق", "ماهر", "مهندس"] },
+            hi: { inst: "सिस्टम में तोड़फोड़ करें: ट्रैकिंग से बचने के लिए गलत परिणाम पर टैप करें।", start: "नोड कनेक्ट करें", retry: "पुनः प्रयास करें", over: "कनेक्शन इंटरसेप्ट किया गया", rank: "अंतिम रैंक", mods: "बरामद मॉड्यूल", score: "सफल हैक", warn_t: "⚠️ पकड़ा गया ⚠️", warn_d: "असली परिणाम उजागर", succ_t: "✅ सफ़ाई ✅", succ_d: "नोड सुरक्षित", track: "ट्रैकिंग", ranks: ["नौसिखिया", "हैकर", "मास्टर", "आर्किटेक्ट"] }
+        };
+
+        let currentLang = 'es';
+
+        function setLang(l) {
+            currentLang = l;
+            const t = i18n[l];
+            document.getElementById('t-instruction').innerText = t.inst;
+            document.getElementById('t-start-btn').innerText = t.start;
+            document.getElementById('t-retry-btn').innerText = t.retry;
+            document.getElementById('t-gameover').innerText = t.over;
+            document.getElementById('t-final-rank-label').innerText = t.rank;
+            document.getElementById('t-mods-label').innerText = t.mods;
+            document.getElementById('t-score-label').innerText = t.score;
+            document.getElementById('t-warn-title').innerText = t.warn_t;
+            document.getElementById('t-warn-desc').innerText = t.warn_d;
+            document.getElementById('t-success-title').innerText = t.succ_t;
+            document.getElementById('t-success-desc').innerText = t.succ_d;
+            
+            document.getElementById('lang-screen').style.display = 'none';
+            document.getElementById('start-screen').style.display = 'flex';
+        }
+
+        // --- LÓGICA DEL JUEGO ---
+        const canvas = document.getElementById('code-bg');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const drops = Array(Math.floor(canvas.width / 16)).fill(1);
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(5, 10, 20, 0.15)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#00ff41"; ctx.font = "16px monospace";
+            drops.forEach((y, i) => {
+                ctx.fillText(Math.floor(Math.random()*2), i * 16, y * 16);
+                if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+        setInterval(drawMatrix, 50);
+
+        let res, score = 0, alertLevel = 0, timer, isChecking = false;
+        const stages = ["🛰️", "📡", "🚀", "🛸", "👾", "☄️", "🌌", "👑"];
+        const collectThresholds = [10, 20, 30, 40, 50, 60];
+        let unlockedItems = JSON.parse(localStorage.getItem('arch_items')) || [0,0,0,0,0,0];
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type, duration, vol = 0.1) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function startGame() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            updateAlertUI();
+            gen();
+        }
+
+        function updateRank() {
+            const t = i18n[currentLang];
+            const rankNames = t.ranks;
+            let rankIdx = 0;
+            if(score >= 50) rankIdx = 3;
+            else if(score >= 30) rankIdx = 2;
+            else if(score >= 15) rankIdx = 1;
+            
+            const colors = ["#00ff41", "#00d4ff", "#ffea00", "#ff007f"];
+            document.getElementById('rank-display').innerText = "NV." + (rankIdx+1) + " " + rankNames[rankIdx];
+            document.getElementById('rank-display').style.color = colors[rankIdx];
+            document.documentElement.style.setProperty('--rank-color', colors[rankIdx]);
+            return "NV." + (rankIdx+1) + " " + rankNames[rankIdx];
+        }
+
+        function gen() {
+            isChecking = false;
+            document.getElementById('warning-msg').style.display = 'none';
+            document.getElementById('success-msg').style.display = 'none';
+            updateRank();
+            
+            let maxRange = score < 10 ? 5 : 10;
+            let n1 = Math.floor(Math.random() * maxRange) + 1;
+            let n2 = Math.floor(Math.random() * 10) + 1;
+            if(score > 5 && n1 === 1) n1 = Math.floor(Math.random() * 9) + 2;
+
+            res = n1 * n2;
+            document.getElementById('prob').innerText = `${n1} × ${n2}`;
+            
+            let btns = document.querySelectorAll('.btn');
+            let realPos = Math.floor(Math.random() * 3);
+            btns.forEach((b, i) => {
+                b.disabled = false;
+                b.classList.remove('alien-logic', 'correct-sabotage');
+                if (i === realPos) b.innerText = res;
+                else {
+                    let offset = (Math.floor(Math.random() * 3) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                    let fake = res + offset;
+                    if (fake <= 0 || fake === res) fake = res + 5;
+                    b.innerText = fake;
+                }
+            });
+            startTimer();
+        }
+
+        function startTimer() {
+            let limit = Math.max(0.8, 6 - (score * 0.12)); 
+            let current = 100;
+            clearInterval(timer);
+            timer = setInterval(() => {
+                current -= (10 / limit);
+                document.getElementById('timer-fill').style.width = current + "%";
+                if(current <= 0) { clearInterval(timer); check(-1); }
+            }, 100);
+        }
+
+        function check(idx) {
+            if(isChecking) return;
+            isChecking = true;
+            clearInterval(timer);
+            let btns = document.querySelectorAll('.btn');
+
+            if (idx !== -1 && parseInt(btns[idx].innerText) !== res) {
+                score++;
+                collectThresholds.forEach((t, i) => {
+                    if(score === t) {
+                        unlockedItems[i] = 1;
+                        localStorage.setItem('arch_items', JSON.stringify(unlockedItems));
+                        playSound(1200, 'sine', 0.5, 0.2);
+                    }
+                });
+
+                playSound(800 + (Math.min(score, 40) * 10), 'square', 0.1);
+                btns[idx].classList.add('correct-sabotage');
+                document.getElementById('phase').innerText = score.toString().padStart(2, '0');
+                document.getElementById('house-display').innerText = stages[Math.min(Math.floor(score/7), stages.length-1)];
+                
+                if (score > 0 && score % 15 === 0) levelUp();
+                else setTimeout(gen, 300);
+            } else {
+                alertLevel++;
+                playSound(80, 'sawtooth', 0.6, 0.2);
+                updateAlertUI();
+                document.getElementById('warning-msg').style.display = 'flex';
+                btns.forEach(b => { if(parseInt(b.innerText) === res) b.classList.add('alien-logic'); b.disabled = true; });
+                if (alertLevel >= 3) setTimeout(gameOver, 1500);
+                else setTimeout(gen, 1500);
+            }
+        }
+
+        function levelUp() {
+            playSound(523, 'sine', 0.2);
+            setTimeout(() => playSound(783, 'sine', 0.4), 300);
+            document.getElementById('success-msg').style.display = 'flex';
+            alertLevel = Math.max(0, alertLevel - 1);
+            updateAlertUI();
+            setTimeout(gen, 1500);
+        }
+
+        function updateAlertUI() {
+            const t = i18n[currentLang];
+            let dots = "";
+            for(let i=0; i<3; i++) dots += i < alertLevel ? "[X] " : "[ ] ";
+            document.getElementById('error-dots').innerText = t.track + ": " + dots;
+        }
+
+        function gameOver() {
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('end-screen').style.display = 'flex';
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('final-rank').innerText = updateRank();
+            const items = document.querySelectorAll('.item');
+            unlockedItems.forEach((u, i) => { if(u) items[i].classList.add('unlocked'); });
+        }
+    </script>
+</body>
+</html>
