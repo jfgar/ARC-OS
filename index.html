@@ -95,6 +95,10 @@
         
         #unlock-desc { font-size: 0.85rem; color: #aaa; margin: 10px 40px; line-height: 1.4; font-style: italic; }
         .hacker-alert { color: var(--hacker-green); font-family: 'Courier New', monospace; margin-top: 10px; font-size: 0.8rem; text-transform: uppercase; }
+
+        /* Timer de reparación */
+        #repair-timer-container { width: 200px; height: 4px; background: #333; margin-top: 10px; border-radius: 2px; overflow: hidden;}
+        #repair-timer-fill { height: 100%; background: var(--alert); width: 100%; transition: linear;}
     </style>
 </head>
 <body>
@@ -129,9 +133,10 @@
     <div id="error-screen" class="overlay-screen">
         <h2 id="t-warn-title" style="color: var(--alert);">SISTEMA BLOQUEADO</h2>
         <div id="repair-story" style="color: var(--hacker-green); font-size: 0.8rem; margin-bottom: 10px; max-width: 300px; border-left: 2px solid var(--hacker-green); padding-left: 10px;"></div>
-        <div id="repair-msg" style="font-size: 0.9rem; color: #ff3e3e; margin-top: 5px; font-weight: bold;">[!] ACCESO DENEGADO: INGRESA EL VALOR PARA RE-SINCRONIZAR</div>
+        <div id="repair-msg" style="font-size: 0.9rem; color: #ff3e3e; margin-top: 5px; font-weight: bold;">[!] RE-SINCRONIZA PARA EVITAR RASTREO COMPLETO</div>
         <div id="repair-formula" style="font-size: 2.5rem; margin-top: 10px; color: var(--neon-pink); font-weight: bold;"></div>
         <input type="number" id="repair-input" placeholder="00">
+        <div id="repair-timer-container"><div id="repair-timer-fill"></div></div>
         <div id="post-repair-msg" class="hacker-alert" style="display:none;">> INTEGRIDAD RECUPERADA. PREPÁRATE PARA EL SALTO...</div>
     </div>
 
@@ -218,14 +223,11 @@
                 itemNames: ["CORE", "FIRE CODE", "FIREWALL", "SAT", "IA", "BOT"],
                 itemDescs: ["Energy", "Script", "Shield", "Antenna", "AI", "Bot"]
             }
-            // Puedes añadir el resto de idiomas aquí siguiendo el mismo patrón
         };
 
-        let currentLang = 'es', score = 0, alertLevel = 0, timer, isChecking = false;
+        let currentLang = 'es', score = 0, alertLevel = 0, timer, repairTimer, isChecking = false;
         let currentN1, currentN2, res, combo = 0, lastRank = 0;
-        let masteredErrors = {}; 
         let unlockedItems = [0,0,0,0,0,0];
-        const stages = ["🛰️", "📡", "🚀", "🛸", "👾", "☄️", "🌌", "👑"];
         const itemIcons = ["🔋", "🔥", "🛡️", "📡", "🧠", "🔫"];
         const collectThresholds = [10, 20, 30, 40, 50, 60];
 
@@ -290,6 +292,7 @@
             
             document.getElementById('repair-input').addEventListener('input', (e) => {
                 if(parseInt(e.target.value) === res) {
+                    clearInterval(repairTimer);
                     const hackerAlert = document.getElementById('post-repair-msg');
                     hackerAlert.style.display = 'block';
                     playSound(1000, 'sine', 0.2, 0.3);
@@ -298,7 +301,7 @@
                         hackerAlert.style.display = 'none';
                         document.getElementById('error-screen').style.display = 'none';
                         if (alertLevel < 3) gen(); else gameOver();
-                    }, 1200);
+                    }, 800);
                 }
             });
             updateAlertUI();
@@ -338,10 +341,27 @@
             alertLevel++;
             playSound(80, 'sawtooth', 0.4);
             updateAlertUI();
+            
             document.getElementById('repair-story').innerText = i18n[currentLang].repair_txt;
-            document.getElementById('repair-formula').innerText = `${currentN1} × ${currentN2} = ??`;
+            // AHORA MUESTRA LA RESPUESTA PARA RECUPERAR VIDA
+            document.getElementById('repair-formula').innerText = `${currentN1} × ${currentN2} = ${res}`;
             document.getElementById('error-screen').style.display = 'flex';
+            document.getElementById('repair-input').value = "";
             document.getElementById('repair-input').focus();
+
+            // TEMPORIZADOR DE REPARACIÓN (5 SEGUNDOS)
+            let repairTimeLeft = 100;
+            const fill = document.getElementById('repair-timer-fill');
+            clearInterval(repairTimer);
+            repairTimer = setInterval(() => {
+                repairTimeLeft -= 2;
+                fill.style.width = repairTimeLeft + "%";
+                if(repairTimeLeft <= 0) {
+                    clearInterval(repairTimer);
+                    document.getElementById('error-screen').style.display = 'none';
+                    if (alertLevel < 3) gen(); else gameOver();
+                }
+            }, 100);
         }
 
         function gen() {
@@ -386,6 +406,7 @@
         function updateRank() {
             const t = i18n[currentLang];
             let rankIdx = score >= 50 ? 3 : score >= 30 ? 2 : score >= 15 ? 1 : 0;
+            lastRank = rankIdx;
             const colors = ["#00ff41", "#00d4ff", "#ffea00", "#ff007f"];
             document.getElementById('rank-display').innerText = "NV." + (rankIdx+1) + " " + t.ranks[rankIdx];
             document.getElementById('rank-display').style.color = colors[rankIdx];
@@ -408,11 +429,13 @@
 
         function closeUnlock() {
             document.getElementById('unlock-screen').style.display = 'none';
+            document.getElementById('phase').innerText = score.toString().padStart(2, '0');
             gen();
         }
 
         function gameOver() {
             clearInterval(timer);
+            clearInterval(repairTimer);
             document.getElementById('game').style.display = 'none';
             document.getElementById('error-screen').style.display = 'none';
             document.getElementById('end-screen').style.display = 'flex';
@@ -420,7 +443,6 @@
             document.getElementById('final-rank').innerText = i18n[currentLang].ranks[lastRank];
         }
 
-        // Fondo Matrix
         const canvas = document.getElementById('code-bg');
         const ctx = canvas.getContext('2d');
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
