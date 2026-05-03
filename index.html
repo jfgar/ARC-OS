@@ -117,6 +117,7 @@
     <div id="error-screen" class="overlay-screen">
         <h2 id="t-warn-title" style="color: var(--alert);">SISTEMA BLOQUEADO</h2>
         <div id="repair-msg" style="font-size: 1.1rem; opacity: 0.8;">REPARAR NODO:</div>
+        <!-- El cambio está aquí y en la función handleError -->
         <div id="repair-formula" style="font-size: 2.5rem; margin-top: 10px; color: var(--neon-pink); font-weight: bold;"></div>
         <input type="number" id="repair-input" placeholder="??">
     </div>
@@ -312,7 +313,8 @@
             const key = `${currentN1}x${currentN2}`;
             masteredErrors[key] = {n1: currentN1, n2: currentN2, weight: 3};
 
-            document.getElementById('repair-formula').innerText = `${currentN1} × ${currentN2} = ?`;
+            // MODIFICACIÓN: Ahora se muestra el resultado correcto (res) en la fórmula
+            document.getElementById('repair-formula').innerText = `${currentN1} × ${currentN2} = ${res}`;
             document.getElementById('error-screen').style.display = 'flex';
             document.getElementById('repair-input').focus();
         }
