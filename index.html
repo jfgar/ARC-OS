@@ -53,7 +53,6 @@
 
         .overlay-screen { position: fixed; inset: 0; background: var(--space-dark); z-index: 100; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
         
-        /* TERMINAL STORY STYLES */
         #terminal-story { text-align: left; max-width: 450px; font-size: 0.9rem; border: 1px solid var(--hacker-green); padding: 20px; background: rgba(0,255,65,0.05); margin-bottom: 20px; box-shadow: 0 0 15px rgba(0,255,65,0.1); }
         .typing { overflow: hidden; border-right: .15em solid var(--hacker-green); white-space: nowrap; animation: typing 2s steps(40, end), blink-caret .75s step-end infinite; }
         @keyframes typing { from { width: 0 } to { width: 100% } }
@@ -95,8 +94,6 @@
         .particle { position: absolute; pointer-events: none; background: var(--rank-color); width: 4px; height: 4px; border-radius: 50%; z-index: 100; }
         
         #unlock-desc { font-size: 0.85rem; color: #aaa; margin: 10px 40px; line-height: 1.4; font-style: italic; }
-
-        /* Estilos hacker adicionales para el reingreso */
         .hacker-alert { color: var(--hacker-green); font-family: 'Courier New', monospace; margin-top: 10px; font-size: 0.8rem; text-transform: uppercase; }
     </style>
 </head>
@@ -194,54 +191,34 @@
                 mods: "MÓDULOS", 
                 score: "HACKS", 
                 warn_t: "SISTEMA BLOQUEADO",
-                repair_txt: "> BRECHA DETECTADA. Re-encriptando paquetes... ¡Mantén la conexión, el Architect no debe expulsarte!",
+                repair_txt: "> BRECHA DETECTADA. Re-encriptando paquetes...",
                 track: "RASTREO", 
                 ranks: ["NOVATO", "HACKER", "MAESTRO", "ARCHITECT"], 
                 unlock: "¡MÓDULO RECUPERADO!", 
                 install: "INSTALAR", 
                 itemNames: ["NÚCLEO ENERGÍA", "CÓDIGO ÍGNEO", "FIREWALL ALPHA", "RECEPTOR SAT", "IA CORTEX", "BOT DE ASALTO"],
-                itemDescs: [
-                    "Energía pura extraída del servidor central para prolongar tu estancia.",
-                    "Script ofensivo capaz de fundir las barreras lógicas de la IA.",
-                    "Escudo de datos que te permite navegar por sectores restringidos.",
-                    "Antena de alta frecuencia para interceptar señales de comando.",
-                    "Acceso directo a la red neuronal del Architect. Ya casi estás dentro.",
-                    "Protocolo de fuerza bruta para desmantelar la seguridad física."
-                ]
+                itemDescs: ["Energía pura", "Script ofensivo", "Escudo de datos", "Antena satelital", "IA avanzada", "Bot de combate"]
             },
             en: { 
-                story: "Year 2084. 'Architect' AI rules the world. Your mission: infiltrate its core. To bypass the firewall, select the data that DOES NOT fit.",
+                story: "Year 2084. 'Architect' AI rules the world. Choose data that DOES NOT fit.",
                 goal: "> MISSION: Node Sabotage.",
-                inst: "SABOTAGE: Tap the INCORRECT result.", 
-                start: "CONNECT NODE", 
-                retry: "RETRY ACCESS", 
-                over: "CONNECTION LOST", 
-                rank: "FINAL RANK", 
+                inst: "SABOTAGE: Tap INCORRECT result.", 
+                start: "CONNECT", 
+                retry: "RETRY", 
+                over: "CONN LOST", 
+                rank: "RANK", 
                 mods: "MODULES", 
                 score: "HACKS", 
-                warn_t: "SYSTEM LOCKED", 
-                repair_txt: "> BREACH DETECTATED. Re-encrypting packets... Keep the link open, do not let Architect eject you!",
-                track: "TRACKING", 
+                warn_t: "LOCKED", 
+                repair_txt: "> BREACH DETECTED. Re-encrypting...",
+                track: "TRACK", 
                 ranks: ["NOVICE", "HACKER", "MASTER", "ARCHITECT"], 
-                unlock: "MODULE RECOVERED!", 
+                unlock: "MODULE FOUND!", 
                 install: "INSTALL", 
-                itemNames: ["ENERGY CORE", "FIRE CODE", "FIREWALL ALPHA", "SAT RECEIVER", "IA CORTEX", "ASSAULT BOT"],
-                itemDescs: [
-                    "Pure energy extracted from the central server to extend your connection.",
-                    "Offensive script capable of melting the AI's logical barriers.",
-                    "Data shield that allows you to navigate restricted sectors.",
-                    "High-frequency antenna to intercept command signals.",
-                    "Direct access to Architect's neural network. You're almost in.",
-                    "Brute force protocol to dismantle physical security systems."
-                ]
-            },
-            ca: { story: "Any 2084. La IA 'Architect' controla el món. La teva missió és infiltrar-te en el seu nucli. Per confondre el firewall, has de triar les dades que NO encaixen.", goal: "> OBJECTIU: Sabotatge de nodes.", inst: "SABOTATGE: Toca el resultat INCORRECTE.", start: "CONNECTAR NODE", retry: "REINTENTAR", over: "CONNEXIÓ PERDUDA", rank: "RANG FINAL", mods: "MÒDULS", score: "HACKS", warn_t: "SISTEMA BLOQUEJAT", repair_txt: "> BRETXA DETECTADA. Re-encriptant paquets... Manté la connexió!", track: "RASTREIG", ranks: ["NOVATELL", "HACKER", "MESTRE", "ARCHITECT"], unlock: "MÒDUL RECUPERAT!", install: "INSTAL·LAR", itemNames: ["NUCLI ENERGIA", "CODI IGNIS", "FIREWALL ALPHA", "RECEPTOR SAT", "IA CORTEX", "BOT D'ASSALT"], itemDescs: ["Energia pura per prolongar la teva estada.", "Script per fondre barreres lògiques.", "Escut de dades per sectors restringits.", "Antena per interceptar senyals.", "Accés a la xarxa neuronal de l'Architect.", "Protocol de força bruta contra la seguretat."] },
-            pt: { story: "Ano 2084. A IA 'Architect' controla o mundo. Sua missão é infiltrar-se em seu núcleo. Para confundir o firewall, escolha os dados que NÃO se encaixam.", goal: "> OBJETIVO: Sabotagem de nós.", inst: "SABOTAGEM: Toque no resultado INCORRETO.", start: "CONECTAR NÓ", retry: "REENTRAR", over: "CONEXÃO PERDIDA", rank: "CLASSIFICAÇÃO", mods: "MÓDULOS", score: "HACKS", warn_t: "SISTEMA BLOQUEADO", repair_txt: "> BRECHA DETECTADA. Re-encriptando pacotes... Mantenha a conexão!", track: "RASTREAMENTO", ranks: ["NOVATO", "HACKER", "MESTRE", "ARCHITECT"], unlock: "MÓDULO RECUPE!", install: "INSTALAR", itemNames: ["NÚCLEO ENERGIA", "CÓDIGO ÍGNEO", "FIREWALL ALPHA", "RECEPTOR SAT", "IA CORTEX", "BOT DE ASALTO"], itemDescs: ["Energia pura para prolongar sua conexão.", "Script ofensivo contra barreiras lógicas.", "Escudo de datos para setores restritos.", "Antena para interceptar sinais de comando.", "Acesso à rede neural do Architect.", "Protocolo de força bruta para segurança."] },
-            fr: { story: "Année 2084. L'IA 'Architect' domine le monde. Votre mission est d'infiltrer son noyau. Pour tromper le pare-feu, choisissez les données qui ne correspondent PAS.", goal: "> OBJECTIF : Sabotage de nœuds.", inst: "SABOTAGE: Touchez le résultat INCORRECT.", start: "CONNECTER NOEUD", retry: "RÉESSAYER", over: "CONNEXION PERDUE", rank: "RANG FINAL", mods: "MODULES", score: "HACKS", warn_t: "SYSTÈME BLOQUÉ", repair_txt: "> BRÈCHE DÉTECTÉE. Ré-encodage des paquets... Gardez la connexion !", track: "TRAÇAGE", ranks: ["NOVICE", "HACKER", "MAÎTRE", "ARCHITECT"], unlock: "MODULE RÉCUPÉRÉ!", install: "INSTALLER", itemNames: ["NOYAU ÉNERGIE", "CODE FEU", "PARE-FEU ALPHA", "RECEPTEUR SAT", "IA CORTEX", "BOT D'ASSAUT"], itemDescs: ["Énergie pure pour prolonger votre connexion.", "Script pour faire fondre les barrières logiques.", "Bouclier de données pour les secteurs restreints.", "Antenne pour intercepter les signaux.", "Accès au réseau neuronal d'Architect.", "Protocole de force brute pour la sécurité."] },
-            de: { story: "Jahr 2084. Die KI 'Architect' beherrscht die Welt. Deine Mission: Infiltriere ihren Kern. Um die Firewall zu umgehen, wähle die Daten aus, die NICHT passen.", goal: "> ZIEL: Sabotage der Knoten.", inst: "SABOTAGE: Tippen Sie auf das FALSCHE Ergebnis.", start: "KNOTEN VERBINDEN", retry: "NEUSTART", over: "VERBINDUNG VERLOREN", rank: "END-RANG", mods: "MODULE", score: "HACKS", warn_t: "SYSTEM GESPERRT", repair_txt: "> LÜCKE ERKANNT. Pakete werden neu verschlüsselt... Bleiben Sie dran!", track: "VERFOLGUNG", ranks: ["ANFÄNGER", "HACKER", "MEISTER", "ARCHITECT"], unlock: "MODUL GEFUNDEN!", install: "INSTALLIEREN", itemNames: ["ENERGIEKERN", "FEUER-CODE", "FIREWALL ALPHA", "SAT-EMPFÄNGER", "KI-CORTEX", "ANGRIFFS-BOT"], itemDescs: ["Reine Energie, um die Verbindung zu verlängern.", "Skript zum Schmelzen logischer Barrieren.", "Datenschild für eingeschränkte Sektoren.", "Antenne zum Abfangen von Signalen.", "Zugriff auf das neuronale Netz von Architect.", "Brute-Force-Protokoll für die Sicherheit."] },
-            zh: { story: "2084年。“建筑师”AI统治着世界。你的任务是渗透它的核心。为了迷惑它的防火墙，你必须选择不匹配的数据。", goal: "> 目标：节点破坏。", inst: "破坏行动：点击错误的结果。", start: "连接节点", retry: "重试", over: "连接中断", rank: "最终等级", mods: "模块", score: "入侵次数", warn_t: "系统已锁定", repair_txt: "> 检测到漏洞。正在重新加密数据包... 保持连接！", track: "追踪中", ranks: ["新手", "黑客", "大师", "建筑师"], unlock: "模块已恢复！", install: "安装", itemNames: ["能源核心", "烈火代码", "阿尔法防火墙", "卫星接收器", "皮层AI", "突击机器人"], itemDescs: ["延长连接时间的纯净能源。", "熔化逻辑壁垒的脚本。", "限制区域的数据护盾。", "拦截指令信号的天线。", "接入建筑师的神经网络。", "暴力破解安全协议。"] },
-            hi: { story: "वर्ष 2084. 'आर्किटेक्ट' एआई दुनिया पर राज करती है। आपका मिशन: इसके मूल में घुसपैठ करना। फ़ायरवॉल को चकma देने के लिए, वह डेटा चुनें जो मेल नहीं खाता।", goal: "> लक्ष्य: नोड तोड़फोड़।", inst: "तोड़फोड़: गलत परिणाम पर टैप करें।", start: "नोड कनेक्ट करें", retry: "पुनः प्रयास करें", over: "कनेक्शन टूटा", rank: "अंतिम रैंक", mods: "मॉड्यूल", score: "हैक्स", warn_t: "सिستم लॉक", repair_txt: "> सुरक्षा उल्लंघन। पैकेटों को पुनः एन्क्रिप्ट किया जा रहा है... कनेक्शन बनाए रखें!", track: "ट्रैकिंग", ranks: ["नौसिखिया", "हैकर", Hindi "मास्टर", "आर्किटेक्ट"], unlock: "मॉड्यूल बरामद!", install: "स्थापित", itemNames: ["ऊर्जा कोर", "अग्नि कोड", "फ़ायरवॉल अल्फा", "सैट रिसीver", "एआई कॉर्टेक्स", "असॉल्ट बॉट"], itemDescs: ["कनेक्शन बढ़ाने के लिए शुद्ध ऊर्जा।", "तार्किक बाधाओं को तोड़ने का कोड।", "प्रतिबंधित क्षेत्रों के लिए डेटा शील्ड।", "सिग्नल रोकने के लिए एंटीna।", "आर्किटेक्ट के न्यूरल नेटवर्क तक पहुंच।", "सुरक्षा प्रणालियों के लिए ब्रूट फ़ोर्स।"] },
-            ar: { story: "عام 2084. الذكاء الاصطناعي 'المهندس' يحكم العالم. مهمتك هي اختراق جوهره. لتضليل جدار الحماية، يجب عليك اختيار البيانات التي لا تتطابق.", goal: "> الهدف: تخريب العقد.", inst: "تخريب: اضغط على النتيجة الخاطئة.", start: "توصيل العقدة", retry: "إعادة المحاولة", over: "فقد الاتصال", rank: "الرتبة النهائية", mods: "وحدات", score: "اختراقات", warn_t: "النظام مغلق", repair_txt: "> تم اكتشاف خرق. إعادة تشفير الحزم... حافظ على الاتصال!", track: "تتبع", ranks: ["مبتدئ", "مخترق", "سيد", "المهندس"], unlock: "تم استرداد الوحدة!", install: "تثبيت", itemNames: ["نواة الطاقة", "كود النار", "جدار حماية ألفa", "مستقبل سات", "ذكاء كورتيكس", "روبوت هجومي"], itemDescs: ["طاقة نقية لتمديد اتصالك.", "برنامج لإذابة الحواجز المنطقية.", "درع بيانات للقطاعات المحظورة.", "هوائي لاعتراض إشارات الأوامر.", "الوصول إلى الشبكة العصبية للمهندس.", "بروتوكول القوة الغاشمة للأمن."] }
+                itemNames: ["CORE", "FIRE CODE", "FIREWALL", "SAT", "IA", "BOT"],
+                itemDescs: ["Energy", "Script", "Shield", "Antenna", "AI", "Bot"]
+            }
+            // Puedes añadir el resto de idiomas aquí siguiendo el mismo patrón
         };
 
         let currentLang = 'es', score = 0, alertLevel = 0, timer, isChecking = false;
@@ -255,8 +232,8 @@
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         function setLang(l) {
-            currentLang = l;
-            const t = i18n[l];
+            currentLang = i18n[l] ? l : 'es';
+            const t = i18n[currentLang];
             document.getElementById('t-story-body').innerText = t.story;
             document.getElementById('t-goal').innerText = t.goal;
             document.getElementById('t-instruction').innerText = t.inst;
@@ -313,26 +290,17 @@
             
             document.getElementById('repair-input').addEventListener('input', (e) => {
                 if(parseInt(e.target.value) === res) {
-                    const inputField = e.target;
                     const hackerAlert = document.getElementById('post-repair-msg');
-                    
-                    inputField.style.borderColor = "var(--hacker-green)";
                     hackerAlert.style.display = 'block';
                     playSound(1000, 'sine', 0.2, 0.3);
-
-                    // Pequeña espera para que el jugador lea el mensaje "hacker"
                     setTimeout(() => {
-                        inputField.value = "";
-                        inputField.style.borderColor = "var(--alert)";
+                        e.target.value = "";
                         hackerAlert.style.display = 'none';
                         document.getElementById('error-screen').style.display = 'none';
-                        
-                        if (alertLevel < 3) gen();
-                        else gameOver();
+                        if (alertLevel < 3) gen(); else gameOver();
                     }, 1200);
                 }
             });
-
             updateAlertUI();
             gen();
         }
@@ -344,39 +312,20 @@
             let btns = document.querySelectorAll('.btn');
             
             if (idx !== -1 && parseInt(btns[idx].innerText) !== res) {
-                combo++;
-                score++;
+                combo++; score++;
                 screenShake();
                 if(event) createParticles(event.clientX, event.clientY);
-
                 const cTag = document.getElementById('combo-tag');
                 cTag.innerText = `X${combo}`;
                 cTag.style.opacity = combo > 1 ? 1 : 0;
-                cTag.style.transform = 'scale(1.2)';
-                setTimeout(() => cTag.style.transform = 'scale(1)', 100);
-
                 if(combo >= 5) document.getElementById('game').classList.add('overclock-active');
-
-                playSound(800 + (combo * 50), 'square', 0.1);
+                playSound(800 + (combo * 20), 'square', 0.1);
                 
-                const key = `${currentN1}x${currentN2}`;
-                if(masteredErrors[key]) {
-                    masteredErrors[key].weight--;
-                    if(masteredErrors[key].weight <= 0) delete masteredErrors[key];
-                }
-
                 let itemIdx = collectThresholds.indexOf(score);
-                if(itemIdx !== -1) {
-                    showUnlock(itemIdx);
-                } else {
-                    btns[idx].classList.add('correct-sabotage');
+                if(itemIdx !== -1) showUnlock(itemIdx);
+                else {
                     document.getElementById('phase').innerText = score.toString().padStart(2, '0');
-                    document.getElementById('house-display').innerText = stages[Math.min(Math.floor(score/8), stages.length-1)];
-                    document.getElementById('house-display').style.transform = 'scale(1.3)';
-                    setTimeout(() => {
-                        document.getElementById('house-display').style.transform = 'scale(1)';
-                        gen();
-                    }, 250);
+                    gen();
                 }
             } else {
                 handleError();
@@ -386,16 +335,9 @@
         function handleError() {
             combo = 0;
             document.getElementById('game').classList.remove('overclock-active');
-            document.getElementById('combo-tag').style.opacity = 0;
             alertLevel++;
-            playSound(80, 'sawtooth', 0.4, 0.2);
-            screenShake();
+            playSound(80, 'sawtooth', 0.4);
             updateAlertUI();
-            
-            const key = `${currentN1}x${currentN2}`;
-            masteredErrors[key] = {n1: currentN1, n2: currentN2, weight: 3};
-
-            // Inyectar historia en el error
             document.getElementById('repair-story').innerText = i18n[currentLang].repair_txt;
             document.getElementById('repair-formula').innerText = `${currentN1} × ${currentN2} = ??`;
             document.getElementById('error-screen').style.display = 'flex';
@@ -405,28 +347,16 @@
         function gen() {
             isChecking = false;
             updateRank();
-            
-            const errorKeys = Object.keys(masteredErrors);
-            if(errorKeys.length > 0 && Math.random() < 0.4) { 
-                let key = errorKeys[Math.floor(Math.random() * errorKeys.length)];
-                currentN1 = masteredErrors[key].n1;
-                currentN2 = masteredErrors[key].n2;
-            } else {
-                let nA = Math.floor(Math.random() * 8) + 2; 
-                let nB = Math.floor(Math.random() * 8) + 2;
-                currentN1 = Math.min(nA, nB);
-                currentN2 = Math.max(nA, nB);
-            }
-            
+            let nA = Math.floor(Math.random() * 8) + 2; 
+            let nB = Math.floor(Math.random() * 8) + 2;
+            currentN1 = Math.min(nA, nB);
+            currentN2 = Math.max(nA, nB);
             res = currentN1 * currentN2;
             document.getElementById('prob').innerText = `${currentN1} × ${currentN2}`;
             
             const grid = document.getElementById('visual-grid');
             grid.style.gridTemplateColumns = `repeat(${currentN2}, 1fr)`;
             grid.innerHTML = '';
-            let opacity = Math.max(0.05, 0.7 - (score * 0.015));
-            grid.style.opacity = opacity;
-
             for(let i=0; i < (currentN1 * currentN2); i++) {
                 const dot = document.createElement('div');
                 dot.className = 'dot';
@@ -436,26 +366,14 @@
             let btns = document.querySelectorAll('.btn');
             let realPos = Math.floor(Math.random() * 3);
             btns.forEach((b, i) => {
-                b.disabled = false;
-                b.classList.remove('correct-sabotage');
                 if (i === realPos) b.innerText = res;
-                else {
-                    let fake;
-                    const coin = Math.random();
-                    if(coin < 0.33) fake = res + currentN1;
-                    else if(coin < 0.66) fake = res - currentN2;
-                    else fake = res + (Math.random() > 0.5 ? 2 : -2);
-
-                    if (fake <= 0 || fake === res) fake = res + 10;
-                    b.innerText = fake;
-                }
+                else b.innerText = res + (Math.random() > 0.5 ? currentN1 : -1);
             });
             startTimer();
         }
 
         function startTimer() {
-            let baseLimit = Math.max(0.6, 5 - (score * 0.12)); 
-            let limit = combo > 5 ? baseLimit * 0.8 : baseLimit;
+            let limit = Math.max(1, 5 - (score * 0.1));
             let current = 100;
             clearInterval(timer);
             timer = setInterval(() => {
@@ -468,14 +386,6 @@
         function updateRank() {
             const t = i18n[currentLang];
             let rankIdx = score >= 50 ? 3 : score >= 30 ? 2 : score >= 15 ? 1 : 0;
-            
-            if(rankIdx > lastRank) {
-                playSound(1200, 'sine', 0.5);
-                document.body.style.background = "white";
-                setTimeout(() => document.body.style.background = "var(--space-dark)", 100);
-                lastRank = rankIdx;
-            }
-
             const colors = ["#00ff41", "#00d4ff", "#ffea00", "#ff007f"];
             document.getElementById('rank-display').innerText = "NV." + (rankIdx+1) + " " + t.ranks[rankIdx];
             document.getElementById('rank-display').style.color = colors[rankIdx];
@@ -483,10 +393,9 @@
         }
 
         function updateAlertUI() {
-            const t = i18n[currentLang];
             let dots = "";
             for(let i=0; i<3; i++) dots += i < alertLevel ? "● " : "○ ";
-            document.getElementById('error-dots').innerText = t.track + ": " + dots;
+            document.getElementById('error-dots').innerText = "RASTREO: " + dots;
         }
 
         function showUnlock(idx) {
@@ -495,7 +404,6 @@
             document.getElementById('unlock-name').innerText = i18n[currentLang].itemNames[idx];
             document.getElementById('unlock-desc').innerText = i18n[currentLang].itemDescs[idx];
             document.getElementById('unlock-screen').style.display = 'flex';
-            playSound(1000, 'triangle', 0.4);
         }
 
         function closeUnlock() {
@@ -510,39 +418,22 @@
             document.getElementById('end-screen').style.display = 'flex';
             document.getElementById('final-score').innerText = score;
             document.getElementById('final-rank').innerText = i18n[currentLang].ranks[lastRank];
-            document.getElementById('final-rank').style.color = getComputedStyle(document.documentElement).getPropertyValue('--rank-color');
-            
-            const coll = document.getElementById('collection-end');
-            coll.innerHTML = '';
-            unlockedItems.forEach((unlocked, i) => {
-                const item = document.createElement('div');
-                item.className = 'item' + (unlocked ? ' unlocked' : '');
-                item.innerText = itemIcons[i];
-                coll.appendChild(item);
-            });
         }
 
+        // Fondo Matrix
         const canvas = document.getElementById('code-bg');
         const ctx = canvas.getContext('2d');
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resize);
-        resize();
-
-        const columns = Math.floor(canvas.width / 20);
-        const drops = new Array(columns).fill(0);
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(5, 10, 20, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00ff41';
-            ctx.font = '15px monospace';
-            for(let i=0; i<drops.length; i++) {
-                const text = String.fromCharCode(Math.random() * 128);
-                ctx.fillText(text, i * 20, drops[i] * 20);
-                if(drops[i] * 20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
+        window.onresize = resize; resize();
+        const drops = new Array(Math.floor(canvas.width / 20)).fill(0);
+        function draw() {
+            ctx.fillStyle = 'rgba(5,10,20,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = '#0f0'; drops.forEach((y, i) => {
+                ctx.fillText(String.fromCharCode(Math.random()*128), i*20, y*20);
+                if(y*20 > canvas.height && Math.random() > 0.975) drops[i] = 0; else drops[i]++;
+            });
         }
-        setInterval(drawMatrix, 50);
+        setInterval(draw, 50);
     </script>
 </body>
 </html>
