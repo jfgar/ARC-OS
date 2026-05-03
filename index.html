@@ -12,7 +12,6 @@
             --hacker-green: #00ff41; 
             --alert: #ff3e3e; 
             --rank-color: #00ff41;
-            --kofi-color: #29abe0;
         }
         body { font-family: 'Courier New', monospace; background: var(--space-dark); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
         
@@ -38,7 +37,6 @@
         
         #house-display { font-size: 4rem; z-index: 5; transition: transform 0.3s; }
 
-        /* Pantallas Especiales */
         .overlay-screen { position: fixed; inset: 0; background: var(--space-dark); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
         
         #unlock-screen {
@@ -91,44 +89,47 @@
         .item { width: 35px; height: 35px; background: #1e293b; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; opacity: 0.2; filter: grayscale(1); }
         .item.unlocked { opacity: 1; filter: grayscale(0); border: 1px solid var(--hacker-green); box-shadow: 0 0 5px var(--hacker-green); }
 
-        .kofi-button { margin-top: 25px; display: inline-block; background: var(--kofi-color); color: white; text-decoration: none; padding: 10px 15px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; border: 1px solid white; transition: 0.3s; }
-        .credits { font-size: 0.7rem; color: #4b5563; margin-top: 25px; letter-spacing: 1px; }
-        .lang-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; width: 100%; max-width: 350px; }
-        .lang-btn { background: #111827; border: 1px solid var(--hacker-green); color: white; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+        .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; width: 100%; max-width: 300px; }
+        .lang-btn { background: #111827; border: 1px solid var(--hacker-green); color: white; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-family: 'Courier New', monospace; transition: 0.3s; }
+        .lang-btn:hover { background: var(--hacker-green); color: black; }
     </style>
 </head>
 <body>
 
     <canvas id="code-bg"></canvas>
 
-    <!-- PANTALLA DE DESBLOQUEO (NUEVA) -->
-    <div id="unlock-screen" class="overlay-screen">
-        <h1 id="t-unlock-title" style="color: var(--neon-blue); margin: 0;">¡MÓDULO RECUPERADO!</h1>
-        <div id="unlock-icon" class="unlock-anim">🔋</div>
-        <h2 id="unlock-name" style="color: white; margin: 0;">BATERÍA DE PLASMA</h2>
-        <button class="action-btn" onclick="closeUnlock()" style="background: var(--neon-blue);">INSTALAR</button>
-    </div>
-
-    <div id="error-screen">
-        <h2 id="t-warn-title" style="font-size: 2rem; color: white;"></h2>
-        <div id="correct-answer-display" style="font-size: 3.5rem; font-weight: 900; margin: 20px 0;">0 × 0 = 0</div>
-        <button class="action-btn" onclick="resumeGame()" style="background: white; color: red;">CONTINUAR</button>
-    </div>
-
+    <!-- 1. PANTALLA DE IDIOMA -->
     <div id="lang-screen" class="overlay-screen">
-        <h2 style="color: var(--hacker-green);">SELECT LANGUAGE</h2>
+        <h2 style="color: var(--hacker-green); letter-spacing: 2px;">SELECT INTERFACE</h2>
         <div class="lang-grid">
-            <button class="lang-btn" onclick="setLang('es')">Español</button>
-            <button class="lang-btn" onclick="setLang('en')">English</button>
+            <button class="lang-btn" onclick="setLang('es')">ESPAÑOL</button>
+            <button class="lang-btn" onclick="setLang('en')">ENGLISH</button>
         </div>
     </div>
 
+    <!-- 2. PANTALLA DE INICIO (OCULTA HASTA ELEGIR IDIOMA) -->
     <div id="start-screen" class="overlay-screen" style="display: none;">
         <h1 style="color: var(--hacker-green); letter-spacing: 4px;">ARCHITECT OS</h1>
-        <p id="t-instruction"></p>
+        <p id="t-instruction" style="max-width: 300px; line-height: 1.5;"></p>
         <button id="t-start-btn" class="action-btn" onclick="startGame()"></button>
     </div>
 
+    <!-- 3. PANTALLA DE DESBLOQUEO -->
+    <div id="unlock-screen" class="overlay-screen">
+        <h1 id="t-unlock-title" style="color: var(--neon-blue); margin: 0;"></h1>
+        <div id="unlock-icon" class="unlock-anim">🔋</div>
+        <h2 id="unlock-name" style="color: white; margin: 0;"></h2>
+        <button id="t-install-btn" class="action-btn" onclick="closeUnlock()" style="background: var(--neon-blue);"></button>
+    </div>
+
+    <!-- 4. PANTALLA DE ERROR/REPARACIÓN -->
+    <div id="error-screen">
+        <h2 id="t-warn-title" style="font-size: 1.5rem; color: white;"></h2>
+        <div id="correct-answer-display" style="font-size: 3rem; font-weight: 900; margin: 20px 0;"></div>
+        <button id="t-continue-btn" class="action-btn" onclick="resumeGame()" style="background: white; color: red;"></button>
+    </div>
+
+    <!-- 5. PANTALLA DE FIN -->
     <div id="end-screen" class="overlay-screen" style="display: none;">
         <h1 id="t-gameover" style="color: var(--alert);"></h1>
         <div class="stat-box">
@@ -136,9 +137,8 @@
             <div id="final-rank">-</div>
             <hr style="border:0; border-top:1px solid #1e293b; margin:10px 0;">
             <div id="t-mods-label"></div>
-            <div id="collection">
-                <div class="item">🔋</div><div class="item">🔥</div><div class="item">🛡️</div>
-                <div class="item">📡</div><div class="item">🧠</div><div class="item">🔫</div>
+            <div id="collection-end">
+                <!-- Se llena por JS -->
             </div>
             <hr style="border:0; border-top:1px solid #1e293b; margin:10px 0;">
             <div id="t-score-label"></div>
@@ -147,6 +147,7 @@
         <button id="t-retry-btn" class="action-btn" onclick="location.reload()"></button>
     </div>
 
+    <!-- EL JUEGO -->
     <div id="game">
         <div id="hud">
             <span id="rank-display"></span>
@@ -168,19 +169,25 @@
     <script>
         const i18n = {
             es: { 
-                inst: "Sabotea el sistema: Toca el resultado INCORRECTO.", start: "Conectar Nodo", retry: "Reintentar Acceso", over: "CONEXIÓN INTERCEPTADA", rank: "RANGO FINAL", mods: "MÓDULOS", score: "HACKS", warn_t: "⚠️ DETECTADO ⚠️", track: "RASTREO", ranks: ["NOVATO", "HACKER", "MAESTRO", "ARCHITECT"],
-                unlock: "¡MÓDULO RECUPERADO!",
+                inst: "SABOTAJE: Toca el resultado INCORRECTO para corromper el sistema.", 
+                start: "CONECTAR NODO", retry: "REINTENTAR", over: "CONEXIÓN PERDIDA", 
+                rank: "RANGO FINAL", mods: "MÓDULOS", score: "HACKS", warn_t: "SISTEMA BLOQUEADO", 
+                track: "RASTREO", ranks: ["NOVATO", "HACKER", "MAESTRO", "ARCHITECT"],
+                unlock: "¡MÓDULO RECUPERADO!", install: "INSTALAR", cont: "REPARAR Y SEGUIR",
                 itemNames: ["NÚCLEO ENERGÍA", "CÓDIGO ÍGNEO", "FIREWALL ALPHA", "RECEPTOR SAT", "IA CORTEX", "BOT DE ASALTO"]
             },
             en: { 
-                inst: "Sabotage the system: Tap the INCORRECT result.", start: "Connect Node", retry: "Retry Access", over: "INTERCEPTED", rank: "FINAL RANK", mods: "MODULES", score: "HACKS", warn_t: "⚠️ DETECTED ⚠️", track: "TRACKING", ranks: ["NOVICE", "HACKER", "MASTER", "ARCHITECT"],
-                unlock: "MODULE RECOVERED!",
+                inst: "SABOTAGE: Tap the INCORRECT result to corrupt the system.", 
+                start: "CONNECT NODE", retry: "RETRY ACCESS", over: "CONNECTION LOST", 
+                rank: "FINAL RANK", mods: "MODULES", score: "HACKS", warn_t: "SYSTEM LOCKED", 
+                track: "TRACKING", ranks: ["NOVICE", "HACKER", "MASTER", "ARCHITECT"],
+                unlock: "MODULE RECOVERED!", install: "INSTALL", cont: "REPAIR & CONTINUE",
                 itemNames: ["ENERGY CORE", "FIRE CODE", "FIREWALL ALPHA", "SAT RECEIVER", "IA CORTEX", "ASSAULT BOT"]
             }
         };
 
         let currentLang = 'es';
-        let score = 0, alertLevel = 0, timer, isChecking = false;
+        let score = 0, alertLevel = 0, timer, isChecking = false, currentN1, currentN2, res;
         const stages = ["🛰️", "📡", "🚀", "🛸", "👾", "☄️", "🌌", "👑"];
         const itemIcons = ["🔋", "🔥", "🛡️", "📡", "🧠", "🔫"];
         const collectThresholds = [10, 20, 30, 40, 50, 60];
@@ -198,19 +205,24 @@
             document.getElementById('t-score-label').innerText = t.score;
             document.getElementById('t-warn-title').innerText = t.warn_t;
             document.getElementById('t-unlock-title').innerText = t.unlock;
+            document.getElementById('t-install-btn').innerText = t.install;
+            document.getElementById('t-continue-btn').innerText = t.cont;
+            
             document.getElementById('lang-screen').style.display = 'none';
             document.getElementById('start-screen').style.display = 'flex';
         }
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(freq, type, duration, vol = 0.1) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + duration);
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
         }
 
         function startGame() {
@@ -231,14 +243,13 @@
                 score++;
                 playSound(800 + (score * 10), 'square', 0.1);
                 
-                // Verificar desbloqueo de objeto
                 let itemIdx = collectThresholds.indexOf(score);
                 if(itemIdx !== -1) {
                     showUnlock(itemIdx);
                 } else {
                     btns[idx].classList.add('correct-sabotage');
                     document.getElementById('phase').innerText = score.toString().padStart(2, '0');
-                    document.getElementById('house-display').innerText = stages[Math.min(Math.floor(score/7), stages.length-1)];
+                    document.getElementById('house-display').innerText = stages[Math.min(Math.floor(score/8), stages.length-1)];
                     setTimeout(gen, 300);
                 }
             } else {
@@ -250,7 +261,6 @@
             unlockedItems[idx] = 1;
             localStorage.setItem('arch_items', JSON.stringify(unlockedItems));
             
-            // Sonido Épico
             playSound(440, 'sine', 0.2, 0.2);
             setTimeout(() => playSound(554, 'sine', 0.2, 0.2), 150);
             setTimeout(() => playSound(659, 'sine', 0.4, 0.2), 300);
@@ -272,14 +282,17 @@
             updateAlertUI();
             document.getElementById('correct-answer-display').innerText = `${currentN1} × ${currentN2} = ${res}`;
             document.getElementById('error-screen').style.display = 'flex';
-            if (alertLevel >= 3) setTimeout(gameOver, 2000);
+            if (alertLevel >= 3) {
+                document.getElementById('t-continue-btn').style.display = 'none';
+                setTimeout(gameOver, 2000);
+            }
         }
 
         function gen() {
             isChecking = false;
             document.getElementById('error-screen').style.display = 'none';
             updateRank();
-            let maxRange = score < 10 ? 5 : 10;
+            let maxRange = score < 10 ? 5 : 12;
             currentN1 = Math.floor(Math.random() * maxRange) + 1;
             currentN2 = Math.floor(Math.random() * 10) + 1;
             res = currentN1 * currentN2;
@@ -292,7 +305,7 @@
                 if (i === realPos) b.innerText = res;
                 else {
                     let fake = res + (Math.floor(Math.random() * 3) + 1) * (Math.random() > 0.5 ? 1 : -1);
-                    if (fake <= 0 || fake === res) fake = res + 5;
+                    if (fake <= 0 || fake === res) fake = res + 2;
                     b.innerText = fake;
                 }
             });
@@ -300,7 +313,7 @@
         }
 
         function startTimer() {
-            let limit = Math.max(0.8, 6 - (score * 0.12)); 
+            let limit = Math.max(0.7, 5 - (score * 0.1)); 
             let current = 100;
             clearInterval(timer);
             timer = setInterval(() => {
@@ -322,7 +335,7 @@
         function updateAlertUI() {
             const t = i18n[currentLang];
             let dots = "";
-            for(let i=0; i<3; i++) dots += i < alertLevel ? "[X] " : "[ ] ";
+            for(let i=0; i<3; i++) dots += i < alertLevel ? "● " : "○ ";
             document.getElementById('error-dots').innerText = t.track + ": " + dots;
         }
 
@@ -334,11 +347,17 @@
             document.getElementById('end-screen').style.display = 'flex';
             document.getElementById('final-score').innerText = score;
             document.getElementById('final-rank').innerText = document.getElementById('rank-display').innerText;
-            const items = document.querySelectorAll('.item');
-            unlockedItems.forEach((u, i) => { if(u) items[i].classList.add('unlocked'); });
+            
+            const container = document.getElementById('collection-end');
+            container.innerHTML = '';
+            itemIcons.forEach((icon, i) => {
+                const div = document.createElement('div');
+                div.className = 'item' + (unlockedItems[i] ? ' unlocked' : '');
+                div.innerText = icon;
+                container.appendChild(div);
+            });
         }
 
-        // Matrix Background
         const canvas = document.getElementById('code-bg');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
