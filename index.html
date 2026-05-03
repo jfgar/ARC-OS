@@ -30,35 +30,25 @@
         
         #construction-area { 
             height: 140px; background: #000; border-radius: 15px; 
-            margin-bottom: 20px; display: flex; align-items: center; 
+            margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; 
             justify-content: center; position: relative; overflow: hidden;
             border: 1px solid var(--rank-color);
         }
         
-        #house-display { font-size: 4rem; z-index: 5; transition: transform 0.3s; }
+        #visual-grid { display: grid; gap: 2px; margin-top: 5px; }
+        .dot { width: 6px; height: 6px; background: var(--rank-color); border-radius: 1px; opacity: 0.6; }
+
+        #house-display { font-size: 3rem; z-index: 5; transition: transform 0.3s; }
 
         .overlay-screen { position: fixed; inset: 0; background: var(--space-dark); z-index: 100; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
         
-        #unlock-screen {
-            background: radial-gradient(circle, rgba(0,212,255,0.3) 0%, rgba(5,10,20,1) 80%);
-            z-index: 500;
-        }
-
-        .unlock-anim {
-            font-size: 7rem;
-            margin: 20px;
-            animation: pulse 0.8s infinite alternate;
-            filter: drop-shadow(0 0 25px var(--neon-blue));
-        }
+        #unlock-screen { background: radial-gradient(circle, rgba(0,212,255,0.3) 0%, rgba(5,10,20,1) 80%); z-index: 500; }
+        .unlock-anim { font-size: 7rem; margin: 20px; animation: pulse 0.8s infinite alternate; filter: drop-shadow(0 0 25px var(--neon-blue)); }
 
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.15); } }
 
-        #error-screen {
-            background: rgba(150, 0, 0, 0.95);
-            color: white;
-            z-index: 200;
-            display: none;
-        }
+        #error-screen { background: rgba(15, 20, 30, 0.98); color: white; z-index: 200; border: 2px solid var(--alert); }
+        #repair-input { background: transparent; border: none; border-bottom: 3px solid var(--alert); color: white; font-family: inherit; font-size: 3rem; text-align: center; width: 150px; outline: none; margin: 20px 0; }
 
         #timer-bar { width: 100%; height: 8px; background: #1e293b; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
         #timer-fill { height: 100%; background: var(--neon-pink); width: 100%; box-shadow: 0 0 10px var(--neon-pink); }
@@ -74,18 +64,14 @@
         }
 
         .correct-sabotage { background: #064e3b !important; border-color: var(--hacker-green) !important; color: white; }
-        
         .action-btn { padding: 15px 40px; background: var(--hacker-green); color: black; font-weight: bold; border: none; border-radius: 8px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 0 15px var(--hacker-green); margin-top: 20px; text-transform: uppercase; }
-        
         .stat-box { margin: 15px 0; color: white; border: 1px solid #1e293b; padding: 15px; border-radius: 10px; background: rgba(255,255,255,0.05); width: 250px; }
-        
         #collection-end { display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
-        .item { width: 35px; height: 35px; background: #1e293b; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; opacity: 0.2; filter: grayscale(1); }
-        .item.unlocked { opacity: 1; filter: grayscale(0); border: 1px solid var(--hacker-green); box-shadow: 0 0 5px var(--hacker-green); }
+        .item { width: 35px; height: 35px; background: #1e293b; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; opacity: 0.2; }
+        .item.unlocked { opacity: 1; border: 1px solid var(--hacker-green); box-shadow: 0 0 5px var(--hacker-green); }
 
-        .lang-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; width: 100%; max-width: 380px; }
-        .lang-btn { background: #111827; border: 1px solid var(--hacker-green); color: white; padding: 12px 5px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-family: 'Courier New', monospace; transition: 0.3s; }
-        .lang-btn:hover { background: var(--hacker-green); color: black; }
+        .lang-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .lang-btn { background: #111827; border: 1px solid var(--hacker-green); color: white; padding: 12px 5px; border-radius: 8px; cursor: pointer; font-family: 'Courier New', monospace; }
     </style>
 </head>
 <body>
@@ -93,48 +79,43 @@
     <canvas id="code-bg"></canvas>
 
     <div id="lang-screen" class="overlay-screen" style="display: flex;">
-        <h2 style="color: var(--hacker-green); letter-spacing: 2px;">SELECT INTERFACE</h2>
+        <h2 style="color: var(--hacker-green);">SELECT INTERFACE</h2>
         <div class="lang-grid">
             <button class="lang-btn" onclick="setLang('es')">ES</button>
             <button class="lang-btn" onclick="setLang('en')">EN</button>
             <button class="lang-btn" onclick="setLang('ca')">CA</button>
-            <button class="lang-btn" onclick="setLang('pt')">PT</button>
-            <button class="lang-btn" onclick="setLang('fr')">FR</button>
-            <button class="lang-btn" onclick="setLang('de')">DE</button>
-            <button class="lang-btn" onclick="setLang('zh')">ZH</button>
-            <button class="lang-btn" onclick="setLang('hi')">HI</button>
-            <button class="lang-btn" onclick="setLang('ar')">AR</button>
         </div>
     </div>
 
     <div id="start-screen" class="overlay-screen">
-        <h1 style="color: var(--hacker-green); letter-spacing: 4px;">ARCHITECT OS</h1>
-        <p id="t-instruction" style="max-width: 300px; line-height: 1.5;"></p>
+        <h1 style="color: var(--hacker-green);">ARCHITECT OS</h1>
+        <p id="t-instruction"></p>
         <button id="t-start-btn" class="action-btn" onclick="startGame()"></button>
     </div>
 
+    <!-- PANTALLA DE REPARACIÓN (ERROR) -->
+    <div id="error-screen" class="overlay-screen">
+        <h2 id="t-warn-title">SISTEMA BLOQUEADO</h2>
+        <div id="repair-msg" style="font-size: 1.2rem;">INGRESA EL RESULTADO PARA REPARAR:</div>
+        <div id="repair-formula" style="font-size: 2rem; margin-top: 10px; color: var(--neon-pink);"></div>
+        <input type="number" id="repair-input" placeholder="??">
+        <div id="repair-hint" style="color: #666; font-size: 0.8rem;">Escribe la respuesta correcta para continuar</div>
+    </div>
+
     <div id="unlock-screen" class="overlay-screen">
-        <h1 id="t-unlock-title" style="color: var(--neon-blue); margin: 0; font-size: 1.2rem;"></h1>
+        <h1 id="t-unlock-title"></h1>
         <div id="unlock-icon" class="unlock-anim">🔋</div>
-        <h2 id="unlock-name" style="color: white; margin: 10px 0; letter-spacing: 2px;"></h2>
+        <h2 id="unlock-name"></h2>
         <button id="t-install-btn" class="action-btn" onclick="closeUnlock()" style="background: var(--neon-blue); color: white;"></button>
     </div>
 
-    <div id="error-screen" class="overlay-screen">
-        <h2 id="t-warn-title" style="font-size: 1.5rem; color: white;"></h2>
-        <div id="correct-answer-display" style="font-size: 3rem; font-weight: 900; margin: 20px 0;"></div>
-        <button id="t-continue-btn" class="action-btn" onclick="resumeGame()" style="background: white; color: red;"></button>
-    </div>
-
     <div id="end-screen" class="overlay-screen">
-        <h1 id="t-gameover" style="color: var(--alert);"></h1>
+        <h1 id="t-gameover"></h1>
         <div class="stat-box">
             <div id="t-final-rank-label"></div>
             <div id="final-rank">-</div>
-            <hr style="border:0; border-top:1px solid #1e293b; margin:10px 0;">
             <div id="t-mods-label"></div>
             <div id="collection-end"></div>
-            <hr style="border:0; border-top:1px solid #1e293b; margin:10px 0;">
             <div id="t-score-label"></div>
             <div id="final-score">0</div>
         </div>
@@ -148,6 +129,7 @@
         </div>
         <div id="construction-area">
             <div id="house-display">🛰️</div>
+            <div id="visual-grid"></div>
         </div>
         <div id="timer-bar"><div id="timer-fill"></div></div>
         <div id="prob">? x ?</div>
@@ -163,21 +145,16 @@
         const i18n = {
             es: { inst: "SABOTAJE: Toca el resultado INCORRECTO.", start: "CONECTAR NODO", retry: "REINTENTAR", over: "CONEXIÓN PERDIDA", rank: "RANGO FINAL", mods: "MÓDULOS", score: "HACKS", warn_t: "SISTEMA BLOQUEADO", track: "RASTREO", ranks: ["NOVATO", "HACKER", "MAESTRO", "ARCHITECT"], unlock: "¡MÓDULO RECUPERADO!", install: "INSTALAR", cont: "REPARAR", itemNames: ["NÚCLEO ENERGÍA", "CÓDIGO ÍGNEO", "FIREWALL ALPHA", "RECEPTOR SAT", "IA CORTEX", "BOT DE ASALTO"] },
             en: { inst: "SABOTAGE: Tap the INCORRECT result.", start: "CONNECT NODE", retry: "RETRY ACCESS", over: "CONNECTION LOST", rank: "FINAL RANK", mods: "MODULES", score: "HACKS", warn_t: "SYSTEM LOCKED", track: "TRACKING", ranks: ["NOVICE", "HACKER", "MASTER", "ARCHITECT"], unlock: "MODULE RECOVERED!", install: "INSTALL", cont: "REPAIR", itemNames: ["ENERGY CORE", "FIRE CODE", "FIREWALL ALPHA", "SAT RECEIVER", "IA CORTEX", "ASSAULT BOT"] },
-            ca: { inst: "SABOTATGE: Toca el resultat INCORRECTE.", start: "CONNECTAR NODE", retry: "REINTENTAR", over: "CONNEXIÓ PERDUDA", rank: "RANG FINAL", mods: "MÒDULS", score: "HACKS", warn_t: "SISTEMA BLOQUEJAT", track: "RASTREIG", ranks: ["NOVATELL", "HACKER", "MESTRE", "ARCHITECT"], unlock: "MÒDUL RECUPERAT!", install: "INSTAL·LAR", cont: "REPARAR", itemNames: ["NUCLI ENERGIA", "CODI IGNIS", "FIREWALL ALPHA", "RECEPTOR SAT", "IA CORTEX", "BOT D'ASSALT"] },
-            pt: { inst: "SABOTAGEM: Toque no resultado INCORRETO.", start: "CONECTAR NÓ", retry: "REENTRAR", over: "CONEXÃO PERDIDA", rank: "CLASSIFICAÇÃO", mods: "MÓDULOS", score: "HACKS", warn_t: "SISTEMA BLOQUEADO", track: "RASTREAMENTO", ranks: ["NOVATO", "HACKER", "MESTRE", "ARCHITECT"], unlock: "MÓDULO RECUPE!", install: "INSTALAR", cont: "REPARAR", itemNames: ["NÚCLEO ENERGIA", "CÓDIGO ÍGNEO", "FIREWALL ALPHA", "RECEPTOR SAT", "IA CORTEX", "BOT DE ASALTO"] },
-            fr: { inst: "SABOTAGE: Touchez le résultat INCORRECT.", start: "CONNECTER NOEUD", retry: "RÉESSAYER", over: "CONNEXION PERDUE", rank: "RANG FINAL", mods: "MODULES", score: "HACKS", warn_t: "SYSTÈME BLOQUÉ", track: "TRAÇAGE", ranks: ["NOVICE", "HACKER", "MAÎTRE", "ARCHITECT"], unlock: "MODULE RÉCUPÉRÉ!", install: "INSTALLER", cont: "REPARAR", itemNames: ["NOYAU ÉNERGIE", "CODE FEU", "PARE-FEU ALPHA", "RECEPTEUR SAT", "IA CORTEX", "BOT D'ASSAUT"] },
-            de: { inst: "SABOTAGE: Tippen Sie auf das FALSCHE Ergebnis.", start: "KNOTEN VERBINDEN", retry: "NEUSTART", over: "VERBINDUNG VERLOREN", rank: "END-RANG", mods: "MODULE", score: "HACKS", warn_t: "SYSTEM GESPERRT", track: "VERFOLGUNG", ranks: ["ANFÄNGER", "HACKER", "MEISTER", "ARCHITECT"], unlock: "MODUL GEFUNDEN!", install: "INSTALLIEREN", cont: "REPARIEREN", itemNames: ["ENERGIEKERN", "FEUER-CODE", "FIREWALL ALPHA", "SAT-EMPFÄNGER", "KI-CORTEX", "ANGRIFFS-BOT"] },
-            zh: { inst: "破坏行动：点击错误的结果。", start: "连接节点", retry: "重试", over: "连接中断", rank: "最终等级", mods: "模块", score: "入侵次数", warn_t: "系统已锁定", track: "追踪中", ranks: ["新手", "黑客", "大师", "建筑师"], unlock: "模块已恢复！", install: "安装", cont: "修复", itemNames: ["能源核心", "烈火代码", "阿尔法防火墙", "卫星接收器", "皮层AI", "突击机器人"] },
-            hi: { inst: "तोड़फोड़: गलत परिणाम पर टैप करें।", start: "नोड कनेक्ट करें", retry: "पुनः प्रयास करें", over: "कनेक्शन टूटा", rank: "अंतिम रैंक", mods: "मॉड्यूल", score: "हैक्स", warn_t: "सिستم लॉक", track: "ट्रै킹", ranks: ["नौसिखिया", "हैकर", "मास्टर", "आर्किटेक्ट"], unlock: "मॉड्यूल बरामद!", install: "स्थापित", cont: "मरम्मत", itemNames: ["ऊर्जा कोर", "अग्नि कोड", "फ़ायरवॉल अल्फा", "सैट रिसीवर", "एआई कॉर्टेक्स", "असॉल्ट बॉट"] },
-            ar: { inst: "تخريب: اضغط على النتيجة الخاطئة.", start: "توصيل العقدة", retry: "إعادة المحاولة", over: "فقد الاتصال", rank: "الرتبة النهائية", mods: "وحدات", score: "اختراقات", warn_t: "النظام مغلق", track: "تتبع", ranks: ["مبتدئ", "مخترق", "سيد", "المهندس"], unlock: "تم استرداد الوحدة!", install: "تثبيت", cont: "إصلاح", itemNames: ["نواة الطاقة", "كود النار", "جدار حماية ألفa", "مستقبل سات", "ذكاء كورتيكس", "روبوت هجومي"] }
+            ca: { inst: "SABOTATGE: Toca el resultat INCORRECTE.", start: "CONNECTAR NODE", retry: "REINTENTAR", over: "CONNEXIÓ PERDUDA", rank: "RANG FINAL", mods: "MÒDULS", score: "HACKS", warn_t: "SISTEMA BLOQUEJAT", track: "RASTREIG", ranks: ["NOVATELL", "HACKER", "MESTRE", "ARCHITECT"], unlock: "MÒDUL RECUPERAT!", install: "INSTAL·LAR", cont: "REPARAR", itemNames: ["NUCLI ENERGIA", "CODI IGNIS", "FIREWALL ALPHA", "RECEPTOR SAT", "IA CORTEX", "BOT D'ASSALT"] }
         };
 
-        let currentLang = 'es';
-        let score = 0, alertLevel = 0, timer, isChecking = false, currentN1, currentN2, res;
+        let currentLang = 'es', score = 0, alertLevel = 0, timer, isChecking = false;
+        let currentN1, currentN2, res;
+        let errorHistory = []; // Rastreo de fallas
+        let unlockedItems = [0,0,0,0,0,0];
         const stages = ["🛰️", "📡", "🚀", "🛸", "👾", "☄️", "🌌", "👑"];
         const itemIcons = ["🔋", "🔥", "🛡️", "📡", "🧠", "🔫"];
         const collectThresholds = [10, 20, 30, 40, 50, 60];
-        let unlockedItems = [0,0,0,0,0,0];
 
         function setLang(l) {
             currentLang = l;
@@ -192,7 +169,6 @@
             document.getElementById('t-warn-title').innerText = t.warn_t;
             document.getElementById('t-unlock-title').innerText = t.unlock;
             document.getElementById('t-install-btn').innerText = t.install;
-            document.getElementById('t-continue-btn').innerText = t.cont;
             document.getElementById('lang-screen').style.display = 'none';
             document.getElementById('start-screen').style.display = 'flex';
         }
@@ -214,6 +190,17 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('game').style.display = 'block';
+            
+            // Listener para el input de reparación
+            document.getElementById('repair-input').addEventListener('input', (e) => {
+                if(parseInt(e.target.value) === res) {
+                    e.target.value = "";
+                    document.getElementById('error-screen').style.display = 'none';
+                    if (alertLevel < 3) gen();
+                    else gameOver();
+                }
+            });
+
             updateAlertUI();
             gen();
         }
@@ -223,6 +210,8 @@
             isChecking = true;
             clearInterval(timer);
             let btns = document.querySelectorAll('.btn');
+            
+            // SABOTAJE: Tocar la INCORRECTA para ganar
             if (idx !== -1 && parseInt(btns[idx].innerText) !== res) {
                 score++;
                 playSound(800 + (score * 10), 'square', 0.1);
@@ -240,52 +229,49 @@
             }
         }
 
-        function showUnlock(idx) {
-            unlockedItems[idx] = 1;
-            playSound(440, 'sine', 0.2, 0.2);
-            setTimeout(() => playSound(554, 'sine', 0.2, 0.2), 150);
-            setTimeout(() => playSound(659, 'sine', 0.4, 0.2), 300);
-            document.getElementById('unlock-icon').innerText = itemIcons[idx];
-            document.getElementById('unlock-name').innerText = i18n[currentLang].itemNames[idx];
-            document.getElementById('unlock-screen').style.display = 'flex';
-        }
-
-        function closeUnlock() {
-            document.getElementById('unlock-screen').style.display = 'none';
-            document.getElementById('phase').innerText = score.toString().padStart(2, '0');
-            document.getElementById('house-display').innerText = stages[Math.min(Math.floor(score/8), stages.length-1)];
-            gen();
-        }
-
         function handleError() {
             alertLevel++;
             playSound(80, 'sawtooth', 0.4, 0.2);
             updateAlertUI();
-            document.getElementById('correct-answer-display').innerText = `${currentN1} × ${currentN2} = ${res}`;
+            
+            // Guardar error para repetir esta tabla luego
+            errorHistory.push({n1: currentN1, n2: currentN2});
+            
+            // Forzar reparación cognitiva
+            document.getElementById('repair-formula').innerText = `${currentN1} × ${currentN2} = ?`;
             document.getElementById('error-screen').style.display = 'flex';
-            if (alertLevel >= 3) {
-                document.getElementById('t-continue-btn').style.display = 'none';
-                setTimeout(gameOver, 2000);
-            }
+            document.getElementById('repair-input').focus();
         }
 
         function gen() {
             isChecking = false;
-            document.getElementById('error-screen').style.display = 'none';
             updateRank();
             
-            // Generar dos números entre 2 y 9
-            let nA = Math.floor(Math.random() * 8) + 2; 
-            let nB = Math.floor(Math.random() * 8) + 2;
-            
-            // OPTIMIZACIÓN DE MEMORIA: Aplicar propiedad conmutativa
-            // El número más pequeño siempre va primero (Ej: siempre 2x8, nunca 8x2)
-            currentN1 = Math.min(nA, nB);
-            currentN2 = Math.max(nA, nB);
+            // ALGORITMO INTELIGENTE: 30% prob de repetir un error previo
+            if(errorHistory.length > 0 && Math.random() < 0.3) {
+                let e = errorHistory[Math.floor(Math.random() * errorHistory.length)];
+                currentN1 = e.n1;
+                currentN2 = e.n2;
+            } else {
+                let nA = Math.floor(Math.random() * 8) + 2; 
+                let nB = Math.floor(Math.random() * 8) + 2;
+                currentN1 = Math.min(nA, nB);
+                currentN2 = Math.max(nA, nB);
+            }
             
             res = currentN1 * currentN2;
             document.getElementById('prob').innerText = `${currentN1} × ${currentN2}`;
             
+            // DIBUJAR REJILLA VISUAL (Arquitecto Visual)
+            const grid = document.getElementById('visual-grid');
+            grid.style.gridTemplateColumns = `repeat(${currentN2}, 1fr)`;
+            grid.innerHTML = '';
+            for(let i=0; i < (currentN1 * currentN2); i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                grid.appendChild(dot);
+            }
+
             let btns = document.querySelectorAll('.btn');
             let realPos = Math.floor(Math.random() * 3);
             btns.forEach((b, i) => {
@@ -328,11 +314,21 @@
             document.getElementById('error-dots').innerText = t.track + ": " + dots;
         }
 
-        function resumeGame() { if(alertLevel < 3) gen(); }
+        function showUnlock(idx) {
+            unlockedItems[idx] = 1;
+            document.getElementById('unlock-icon').innerText = itemIcons[idx];
+            document.getElementById('unlock-name').innerText = i18n[currentLang].itemNames[idx];
+            document.getElementById('unlock-screen').style.display = 'flex';
+        }
+
+        function closeUnlock() {
+            document.getElementById('unlock-screen').style.display = 'none';
+            gen();
+        }
 
         function gameOver() {
-            document.getElementById('error-screen').style.display = 'none';
             document.getElementById('game').style.display = 'none';
+            document.getElementById('error-screen').style.display = 'none';
             document.getElementById('end-screen').style.display = 'flex';
             document.getElementById('final-score').innerText = score;
             document.getElementById('final-rank').innerText = document.getElementById('rank-display').innerText;
@@ -346,6 +342,7 @@
             });
         }
 
+        // Background Matrix
         const canvas = document.getElementById('code-bg');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
