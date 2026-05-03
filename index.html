@@ -88,7 +88,20 @@
         .item.unlocked { opacity: 1; border: 1px solid var(--hacker-green); box-shadow: 0 0 5px var(--hacker-green); }
 
         .lang-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; width: 100%; max-width: 380px; }
-        .lang-btn { background: #111827; border: 1px solid var(--hacker-green); color: white; padding: 12px 5px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-family: 'Courier New', monospace; transition: 0.3s; }
+        .lang-btn { 
+    background: #111827; 
+    border: 1px solid var(--hacker-green); 
+    color: white; 
+    padding: 10px 5px;
+    border-radius: 12px; 
+    cursor: pointer; 
+    font-family: 'Courier New', monospace; 
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
         .lang-btn:hover { background: var(--hacker-green); color: black; }
 
         .particle { position: absolute; pointer-events: none; background: var(--rank-color); width: 4px; height: 4px; border-radius: 50%; z-index: 100; }
@@ -108,15 +121,42 @@
     <div id="lang-screen" class="overlay-screen" style="display: flex;">
         <h2 style="color: var(--hacker-green); letter-spacing: 2px;">SELECT INTERFACE</h2>
         <div class="lang-grid">
-            <button class="lang-btn" onclick="setLang('es')">ES</button>
-            <button class="lang-btn" onclick="setLang('en')">EN</button>
-            <button class="lang-btn" onclick="setLang('ca')">CA</button>
-            <button class="lang-btn" onclick="setLang('pt')">PT</button>
-            <button class="lang-btn" onclick="setLang('fr')">FR</button>
-            <button class="lang-btn" onclick="setLang('de')">DE</button>
-            <button class="lang-btn" onclick="setLang('zh')">ZH</button>
-            <button class="lang-btn" onclick="setLang('hi')">HI</button>
-            <button class="lang-btn" onclick="setLang('ar')">AR</button>
+            <button class="lang-btn" onclick="setLang('es')">
+                <span style="font-size: 2rem; display: block;">🇪🇸</span>
+                <span style="font-size: 0.6rem;">ESPAÑOL</span>
+            </button>
+            <button class="lang-btn" onclick="setLang('en')">
+                <span style="font-size: 2rem; display: block;">🇺🇸</span>
+                <span style="font-size: 0.6rem;">ENGLISH</span>
+            </button>
+            <button class="lang-btn" onclick="setLang('ca')">
+                <span style="font-size: 2rem; display: block;">🏴󠁥󠁳󠁣󠁴󠁿</span>
+                <span style="font-size: 0.6rem;">CATALÀ</span>
+            </button>
+            <button class="lang-btn" onclick="setLang('pt')">
+                <span style="font-size: 2rem; display: block;">🇧🇷</span>
+                <span style="font-size: 0.6rem;">PORTUGUÊS</span>
+            </button>
+            <button class="lang-btn" onclick="setLang('fr')">
+                <span style="font-size: 2rem; display: block;">🇫🇷</span>
+                <span style="font-size: 0.6rem;">FRANÇAIS</span>
+            </button>
+            <button class="lang-btn" onclick="setLang('de')">
+                <span style="font-size: 2rem; display: block;">🇩🇪</span>
+                <span style="font-size: 0.6rem;">DEUTSCH</span>
+            </button>
+            <button class="lang-btn" onclick="setLang('zh')">
+                <span style="font-size: 2rem; display: block;">🇨🇳</span>
+                <span style="font-size: 0.6rem;">中文</span>
+            </button>
+            <button class="lang-btn" onclick="setLang('hi')">
+                <span style="font-size: 2rem; display: block;">🇮🇳</span>
+                <span style="font-size: 0.6rem;">हिन्दी</span>
+            </button>
+            <button class="lang-btn" onclick="setLang('ar')">
+                <span style="font-size: 2rem; display: block;">🇸🇦</span>
+                <span style="font-size: 0.6rem;">العربية</span>
+            </button>
         </div>
     </div>
 
