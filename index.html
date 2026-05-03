@@ -37,33 +37,28 @@
         
         #house-display { font-size: 4rem; z-index: 5; transition: transform 0.3s; }
 
-        .overlay-screen { position: fixed; inset: 0; background: var(--space-dark); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
+        .overlay-screen { position: fixed; inset: 0; background: var(--space-dark); z-index: 100; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
         
+        /* Pantalla de Desbloqueo Especial */
         #unlock-screen {
-            display: none;
-            background: radial-gradient(circle, rgba(0,212,255,0.2) 0%, rgba(5,10,20,1) 70%);
-            z-index: 300;
+            background: radial-gradient(circle, rgba(0,212,255,0.3) 0%, rgba(5,10,20,1) 80%);
+            z-index: 500;
         }
 
         .unlock-anim {
-            font-size: 6rem;
+            font-size: 7rem;
             margin: 20px;
-            animation: pulse 1s infinite alternate;
-            filter: drop-shadow(0 0 20px var(--neon-blue));
+            animation: pulse 0.8s infinite alternate;
+            filter: drop-shadow(0 0 25px var(--neon-blue));
         }
 
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.2); } }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.15); } }
 
         #error-screen {
             background: rgba(150, 0, 0, 0.95);
             color: white;
             z-index: 200;
             display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            inset: 0;
         }
 
         #timer-bar { width: 100%; height: 8px; background: #1e293b; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
@@ -85,7 +80,7 @@
         
         .stat-box { margin: 15px 0; color: white; border: 1px solid #1e293b; padding: 15px; border-radius: 10px; background: rgba(255,255,255,0.05); width: 250px; }
         
-        #collection { display: flex; gap: 5px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+        #collection-end { display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
         .item { width: 35px; height: 35px; background: #1e293b; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; opacity: 0.2; filter: grayscale(1); }
         .item.unlocked { opacity: 1; filter: grayscale(0); border: 1px solid var(--hacker-green); box-shadow: 0 0 5px var(--hacker-green); }
 
@@ -99,7 +94,7 @@
     <canvas id="code-bg"></canvas>
 
     <!-- 1. PANTALLA DE IDIOMA -->
-    <div id="lang-screen" class="overlay-screen">
+    <div id="lang-screen" class="overlay-screen" style="display: flex;">
         <h2 style="color: var(--hacker-green); letter-spacing: 2px;">SELECT INTERFACE</h2>
         <div class="lang-grid">
             <button class="lang-btn" onclick="setLang('es')">ESPAÑOL</button>
@@ -115,29 +110,29 @@
     </div>
 
     <!-- 2. PANTALLA DE INICIO -->
-    <div id="start-screen" class="overlay-screen" style="display: none;">
+    <div id="start-screen" class="overlay-screen">
         <h1 style="color: var(--hacker-green); letter-spacing: 4px;">ARCHITECT OS</h1>
         <p id="t-instruction" style="max-width: 300px; line-height: 1.5;"></p>
         <button id="t-start-btn" class="action-btn" onclick="startGame()"></button>
     </div>
 
-    <!-- 3. PANTALLA DE DESBLOQUEO -->
+    <!-- 3. PANTALLA DE DESBLOQUEO (OBJETO) -->
     <div id="unlock-screen" class="overlay-screen">
-        <h1 id="t-unlock-title" style="color: var(--neon-blue); margin: 0;"></h1>
+        <h1 id="t-unlock-title" style="color: var(--neon-blue); margin: 0; font-size: 1.2rem;"></h1>
         <div id="unlock-icon" class="unlock-anim">🔋</div>
-        <h2 id="unlock-name" style="color: white; margin: 0;"></h2>
-        <button id="t-install-btn" class="action-btn" onclick="closeUnlock()" style="background: var(--neon-blue);"></button>
+        <h2 id="unlock-name" style="color: white; margin: 10px 0; letter-spacing: 2px;"></h2>
+        <button id="t-install-btn" class="action-btn" onclick="closeUnlock()" style="background: var(--neon-blue); color: white;"></button>
     </div>
 
     <!-- 4. PANTALLA DE ERROR/REPARACIÓN -->
-    <div id="error-screen">
+    <div id="error-screen" class="overlay-screen">
         <h2 id="t-warn-title" style="font-size: 1.5rem; color: white;"></h2>
         <div id="correct-answer-display" style="font-size: 3rem; font-weight: 900; margin: 20px 0;"></div>
         <button id="t-continue-btn" class="action-btn" onclick="resumeGame()" style="background: white; color: red;"></button>
     </div>
 
     <!-- 5. PANTALLA DE FIN -->
-    <div id="end-screen" class="overlay-screen" style="display: none;">
+    <div id="end-screen" class="overlay-screen">
         <h1 id="t-gameover" style="color: var(--alert);"></h1>
         <div class="stat-box">
             <div id="t-final-rank-label"></div>
@@ -231,9 +226,9 @@
             },
             hi: { 
                 inst: "तोड़फोड़: सिस्टम को भ्रष्ट करने के लिए गलत परिणाम पर टैप करें।", 
-                start: "नोड कनेक्ट करें", retry: "पुनः प्रयास करें", over: "कनेक्शन टूट गया", 
+                start: "नोड कनेक्ट करें", retry: "पुनः प्रयास करें", over: "connection lost", 
                 rank: "अंतिम रैंक", mods: "मॉड्यूल", score: "हैक्स", warn_t: "सिस्टम लॉक", 
-                track: "ट्रैकिंग", ranks: ["नौसिखिया", "हैकर", "मास्टर", "आर्किटेक्ट"],
+                track: "ट्रैकिंग", ranks: ["नौसिखिया", "हैकर", "मास्टर", "आर्किটেक्ट"],
                 unlock: "मॉड्यूल बरामद!", install: "स्थापित करें", cont: "मरम्मत और जारी रखें",
                 itemNames: ["ऊर्जा कोर", "अग्नि कोड", "फ़ायरवॉल अल्फा", "सैट रिसीवर", "एआई कॉर्टेक्स", "असॉल्ट बॉट"]
             },
@@ -252,7 +247,7 @@
         const stages = ["🛰️", "📡", "🚀", "🛸", "👾", "☄️", "🌌", "👑"];
         const itemIcons = ["🔋", "🔥", "🛡️", "📡", "🧠", "🔫"];
         const collectThresholds = [10, 20, 30, 40, 50, 60];
-        let unlockedItems = JSON.parse(localStorage.getItem('arch_items')) || [0,0,0,0,0,0];
+        let unlockedItems = [0,0,0,0,0,0];
 
         function setLang(l) {
             currentLang = l;
@@ -300,6 +295,7 @@
             clearInterval(timer);
             let btns = document.querySelectorAll('.btn');
             
+            // Si el índice es -1 (tiempo agotado) o el valor del botón NO es el resultado correcto (Sabotaje exitoso)
             if (idx !== -1 && parseInt(btns[idx].innerText) !== res) {
                 score++;
                 playSound(800 + (score * 10), 'square', 0.1);
@@ -320,10 +316,10 @@
 
         function showUnlock(idx) {
             unlockedItems[idx] = 1;
-            localStorage.setItem('arch_items', JSON.stringify(unlockedItems));
             playSound(440, 'sine', 0.2, 0.2);
             setTimeout(() => playSound(554, 'sine', 0.2, 0.2), 150);
             setTimeout(() => playSound(659, 'sine', 0.4, 0.2), 300);
+            
             document.getElementById('unlock-icon').innerText = itemIcons[idx];
             document.getElementById('unlock-name').innerText = i18n[currentLang].itemNames[idx];
             document.getElementById('unlock-screen').style.display = 'flex';
@@ -331,12 +327,14 @@
 
         function closeUnlock() {
             document.getElementById('unlock-screen').style.display = 'none';
+            document.getElementById('phase').innerText = score.toString().padStart(2, '0');
+            document.getElementById('house-display').innerText = stages[Math.min(Math.floor(score/8), stages.length-1)];
             gen();
         }
 
         function handleError() {
             alertLevel++;
-            playSound(80, 'sawtooth', 0.6, 0.2);
+            playSound(80, 'sawtooth', 0.4, 0.2);
             updateAlertUI();
             document.getElementById('correct-answer-display').innerText = `${currentN1} × ${currentN2} = ${res}`;
             document.getElementById('error-screen').style.display = 'flex';
