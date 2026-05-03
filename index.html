@@ -89,8 +89,8 @@
         .item { width: 35px; height: 35px; background: #1e293b; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; opacity: 0.2; filter: grayscale(1); }
         .item.unlocked { opacity: 1; filter: grayscale(0); border: 1px solid var(--hacker-green); box-shadow: 0 0 5px var(--hacker-green); }
 
-        .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; width: 100%; max-width: 300px; }
-        .lang-btn { background: #111827; border: 1px solid var(--hacker-green); color: white; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-family: 'Courier New', monospace; transition: 0.3s; }
+        .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; width: 100%; max-width: 380px; }
+        .lang-btn { background: #111827; border: 1px solid var(--hacker-green); color: white; padding: 12px 5px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-family: 'Courier New', monospace; transition: 0.3s; }
         .lang-btn:hover { background: var(--hacker-green); color: black; }
     </style>
 </head>
@@ -104,10 +104,17 @@
         <div class="lang-grid">
             <button class="lang-btn" onclick="setLang('es')">ESPAÑOL</button>
             <button class="lang-btn" onclick="setLang('en')">ENGLISH</button>
+            <button class="lang-btn" onclick="setLang('ca')">CATALÀ</button>
+            <button class="lang-btn" onclick="setLang('pt')">PORTUGUÊS</button>
+            <button class="lang-btn" onclick="setLang('fr')">FRANÇAIS</button>
+            <button class="lang-btn" onclick="setLang('de')">DEUTSCH</button>
+            <button class="lang-btn" onclick="setLang('zh')">中文 (ZH)</button>
+            <button class="lang-btn" onclick="setLang('hi')">हिन्दी (HI)</button>
+            <button class="lang-btn" onclick="setLang('ar')">العربية (AR)</button>
         </div>
     </div>
 
-    <!-- 2. PANTALLA DE INICIO (OCULTA HASTA ELEGIR IDIOMA) -->
+    <!-- 2. PANTALLA DE INICIO -->
     <div id="start-screen" class="overlay-screen" style="display: none;">
         <h1 style="color: var(--hacker-green); letter-spacing: 4px;">ARCHITECT OS</h1>
         <p id="t-instruction" style="max-width: 300px; line-height: 1.5;"></p>
@@ -137,9 +144,7 @@
             <div id="final-rank">-</div>
             <hr style="border:0; border-top:1px solid #1e293b; margin:10px 0;">
             <div id="t-mods-label"></div>
-            <div id="collection-end">
-                <!-- Se llena por JS -->
-            </div>
+            <div id="collection-end"></div>
             <hr style="border:0; border-top:1px solid #1e293b; margin:10px 0;">
             <div id="t-score-label"></div>
             <div id="final-score">0</div>
@@ -183,6 +188,62 @@
                 track: "TRACKING", ranks: ["NOVICE", "HACKER", "MASTER", "ARCHITECT"],
                 unlock: "MODULE RECOVERED!", install: "INSTALL", cont: "REPAIR & CONTINUE",
                 itemNames: ["ENERGY CORE", "FIRE CODE", "FIREWALL ALPHA", "SAT RECEIVER", "IA CORTEX", "ASSAULT BOT"]
+            },
+            ca: { 
+                inst: "SABOTATGE: Toca el resultat INCORRECTE per corrompre el sistema.", 
+                start: "CONNECTAR NODE", retry: "REINTENTAR", over: "CONNEXIÓ PERDUDA", 
+                rank: "RANG FINAL", mods: "MÒDULS", score: "HACKS", warn_t: "SISTEMA BLOQUEJAT", 
+                track: "RASTREIG", ranks: ["NOVATELL", "HACKER", "MESTRE", "ARCHITECT"],
+                unlock: "MÒDUL RECUPERAT!", install: "INSTAL·LAR", cont: "REPARAR I SEGUIR",
+                itemNames: ["NUCLI ENERGIA", "CODI IGNIS", "FIREWALL ALPHA", "RECEPTOR SAT", "IA CORTEX", "BOT D'ASSALT"]
+            },
+            pt: { 
+                inst: "SABOTAGEM: Toque no resultado INCORRETO para corromper o sistema.", 
+                start: "CONECTAR NÓ", retry: "REENTRAR", over: "CONEXÃO PERDIDA", 
+                rank: "CLASSIFICAÇÃO", mods: "MÓDULOS", score: "HACKS", warn_t: "SISTEMA BLOQUEADO", 
+                track: "RASTREAMENTO", ranks: ["NOVATO", "HACKER", "MESTRE", "ARCHITECT"],
+                unlock: "MÓDULO RECUPERADO!", install: "INSTALAR", cont: "REPARAR E SEGUIR",
+                itemNames: ["NÚCLEO ENERGIA", "CÓDIGO ÍGNEO", "FIREWALL ALPHA", "RECEPTOR SAT", "IA CORTEX", "BOT DE ASSALTO"]
+            },
+            fr: { 
+                inst: "SABOTAGE: Touchez le résultat INCORRECT pour corrompre le système.", 
+                start: "CONNECTER NOEUD", retry: "RÉESSAYER", over: "CONNEXION PERDUE", 
+                rank: "RANG FINAL", mods: "MODULES", score: "HACKS", warn_t: "SYSTÈME BLOQUÉ", 
+                track: "TRAÇAGE", ranks: ["NOVICE", "HACKER", "MAÎTRE", "ARCHITECT"],
+                unlock: "MODULE RÉCUPÉRÉ!", install: "INSTALLER", cont: "RÉPARER ET CONTINUER",
+                itemNames: ["NOYAU ÉNERGIE", "CODE FEU", "PARE-FEU ALPHA", "RECEPTEUR SAT", "IA CORTEX", "BOT D'ASSAUT"]
+            },
+            de: { 
+                inst: "SABOTAGE: Tippen Sie auf das FALSCHE Ergebnis, um das System zu stören.", 
+                start: "KNOTEN VERBINDEN", retry: "NEUSTART", over: "VERBINDUNG VERLOREN", 
+                rank: "END-RANG", mods: "MODULE", score: "HACKS", warn_t: "SYSTEM GESPERRT", 
+                track: "VERFOLGUNG", ranks: ["ANFÄNGER", "HACKER", "MEISTER", "ARCHITECT"],
+                unlock: "MODUL GEFUNDEN!", install: "INSTALLIEREN", cont: "REPARIEREN & WEITER",
+                itemNames: ["ENERGIEKERN", "FEUER-CODE", "FIREWALL ALPHA", "SAT-EMPFÄNGER", "KI-CORTEX", "ANGRIFFS-BOT"]
+            },
+            zh: { 
+                inst: "破坏行动：点击错误的结果以入侵系统。", 
+                start: "连接节点", retry: "重试", over: "连接中断", 
+                rank: "最终等级", mods: "模块", score: "入侵次数", warn_t: "系统已锁定", 
+                track: "追踪中", ranks: ["新手", "黑客", "大师", "建筑师"],
+                unlock: "模块已恢复！", install: "安装", cont: "修复并继续",
+                itemNames: ["能源核心", "烈火代码", "阿尔法防火墙", "卫星接收器", "皮层AI", "突击机器人"]
+            },
+            hi: { 
+                inst: "तोड़फोड़: सिस्टम को भ्रष्ट करने के लिए गलत परिणाम पर टैप करें।", 
+                start: "नोड कनेक्ट करें", retry: "पुनः प्रयास करें", over: "कनेक्शन टूट गया", 
+                rank: "अंतिम रैंक", mods: "मॉड्यूल", score: "हैक्स", warn_t: "सिस्टम लॉक", 
+                track: "ट्रैकिंग", ranks: ["नौसिखिया", "हैकर", "मास्टर", "आर्किटेक्ट"],
+                unlock: "मॉड्यूल बरामद!", install: "स्थापित करें", cont: "मरम्मत और जारी रखें",
+                itemNames: ["ऊर्जा कोर", "अग्नि कोड", "फ़ायरवॉल अल्फा", "सैट रिसीवर", "एआई कॉर्टेक्स", "असॉल्ट बॉट"]
+            },
+            ar: { 
+                inst: "تخريب: اضغط على النتيجة الخاطئة لإفساد النظام.", 
+                start: "توصيل العقدة", retry: "إعادة المحاولة", over: "فقد الاتصال", 
+                rank: "الرتبة النهائية", mods: "وحدات", score: "اختراقات", warn_t: "النظام مغلق", 
+                track: "تتبع", ranks: ["مبتدئ", "مخترق", "سيد", "المهندس"],
+                unlock: "تم استرداد الوحدة!", install: "تثبيت", cont: "إصلاح ومتابعة",
+                itemNames: ["نواة الطاقة", "كود النار", "جدار حماية ألفا", "مستقبل سات", "ذكاء كورتيكس", "روبوت هجومي"]
             }
         };
 
@@ -260,11 +321,9 @@
         function showUnlock(idx) {
             unlockedItems[idx] = 1;
             localStorage.setItem('arch_items', JSON.stringify(unlockedItems));
-            
             playSound(440, 'sine', 0.2, 0.2);
             setTimeout(() => playSound(554, 'sine', 0.2, 0.2), 150);
             setTimeout(() => playSound(659, 'sine', 0.4, 0.2), 300);
-
             document.getElementById('unlock-icon').innerText = itemIcons[idx];
             document.getElementById('unlock-name').innerText = i18n[currentLang].itemNames[idx];
             document.getElementById('unlock-screen').style.display = 'flex';
@@ -272,7 +331,6 @@
 
         function closeUnlock() {
             document.getElementById('unlock-screen').style.display = 'none';
-            document.getElementById('phase').innerText = score.toString().padStart(2, '0');
             gen();
         }
 
@@ -347,7 +405,6 @@
             document.getElementById('end-screen').style.display = 'flex';
             document.getElementById('final-score').innerText = score;
             document.getElementById('final-rank').innerText = document.getElementById('rank-display').innerText;
-            
             const container = document.getElementById('collection-end');
             container.innerHTML = '';
             itemIcons.forEach((icon, i) => {
