@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Protocolo Architect: Master</title>
+    <title>Protocolo Architect: Overclock Edition</title>
     <style>
         :root { 
             --neon-blue: #00d4ff; 
@@ -12,9 +12,9 @@
             --hacker-green: #00ff41; 
             --alert: #ff3e3e; 
             --rank-color: #00ff41;
-            --kofi-color: #29abe0;
+            --combo-color: #fff;
         }
-        body { font-family: 'Courier New', monospace; background: var(--space-dark); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
+        body { font-family: 'Courier New', monospace; background: var(--space-dark); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; transition: background 0.3s; }
         
         #code-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; pointer-events: none; }
 
@@ -25,27 +25,46 @@
             border-radius: 20px; border: 3px solid var(--rank-color); 
             position: relative; z-index: 10; text-align: center;
             box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+            transition: transform 0.1s, border-color 0.3s;
         }
         
         #hud { display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--rank-color); font-size: 0.8rem; font-weight: bold; }
         
         #construction-area { 
             height: 140px; background: #000; border-radius: 15px; 
-            margin-bottom: 20px; display: flex; align-items: center; 
+            margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; 
             justify-content: center; position: relative; overflow: hidden;
             border: 1px solid var(--rank-color);
         }
         
-        #house-display { font-size: 4rem; z-index: 5; transition: transform 0.3s; }
-        
-        .overlay-msg { 
-            position: absolute; inset: 0; display: none; 
-            flex-direction: column; align-items: center; 
-            justify-content: center; z-index: 50; padding: 10px;
-            font-weight: bold;
+        #visual-grid { display: grid; gap: 2px; margin-top: 5px; transition: opacity 0.5s; }
+        .dot { width: 6px; height: 6px; background: var(--rank-color); border-radius: 1px; }
+
+        #house-display { font-size: 3rem; z-index: 5; transition: transform 0.2s; }
+
+        #combo-tag { position: absolute; right: 10px; top: 50px; font-size: 1.2rem; font-weight: 900; color: var(--neon-pink); opacity: 0; transform: scale(0.5); transition: 0.2s; z-index: 20; }
+        .overclock-active { animation: rgb-glow 0.5s infinite linear; border-width: 5px !important; }
+        @keyframes rgb-glow {
+            0% { border-color: #ff007f; box-shadow: 0 0 20px #ff007f; }
+            33% { border-color: #00d4ff; box-shadow: 0 0 20px #00d4ff; }
+            66% { border-color: #00ff41; box-shadow: 0 0 20px #00ff41; }
+            100% { border-color: #ff007f; box-shadow: 0 0 20px #ff007f; }
         }
-        #warning-msg { background: rgba(255, 62, 62, 0.95); color: white; }
-        #success-msg { background: var(--neon-blue); color: #000; }
+
+        .overlay-screen { position: fixed; inset: 0; background: var(--space-dark); z-index: 100; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
+        
+        #terminal-story { text-align: left; max-width: 450px; font-size: 0.9rem; border: 1px solid var(--hacker-green); padding: 20px; background: rgba(0,255,65,0.05); margin-bottom: 20px; box-shadow: 0 0 15px rgba(0,255,65,0.1); }
+        .typing { overflow: hidden; border-right: .15em solid var(--hacker-green); white-space: nowrap; animation: typing 2s steps(40, end), blink-caret .75s step-end infinite; }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--hacker-green); } }
+
+        #unlock-screen { background: radial-gradient(circle, rgba(0,212,255,0.3) 0%, rgba(5,10,20,1) 80%); z-index: 500; }
+        .unlock-anim { font-size: 7rem; margin: 20px; animation: pulse 0.8s infinite alternate; filter: drop-shadow(0 0 25px var(--neon-blue)); }
+
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.15); } }
+
+        #error-screen { background: rgba(15, 20, 30, 0.98); color: white; z-index: 200; border: 2px solid var(--alert); }
+        #repair-input { background: transparent; border: none; border-bottom: 3px solid var(--alert); color: white; font-family: inherit; font-size: 3rem; text-align: center; width: 200px; outline: none; margin: 20px 0; }
 
         #timer-bar { width: 100%; height: 8px; background: #1e293b; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
         #timer-fill { height: 100%; background: var(--neon-pink); width: 100%; box-shadow: 0 0 10px var(--neon-pink); }
@@ -57,150 +76,176 @@
             padding: 20px 5px; font-size: 1.8rem; border: none; border-radius: 12px; 
             background: #111827; color: var(--hacker-green); cursor: pointer; 
             border: 1px solid #1e293b; font-family: 'Courier New', monospace;
-            transition: 0.2s;
+            transition: 0.1s;
         }
+        .btn:active { transform: scale(0.9); }
 
         .correct-sabotage { background: #064e3b !important; border-color: var(--hacker-green) !important; color: white; }
-        .alien-logic { background: var(--alert) !important; color: white !important; animation: shake 0.3s infinite; }
-        
-        @keyframes shake { 0%, 100% {transform:translateX(0)} 25% {transform:translateX(4px)} 75% {transform:translateX(-4px)} }
-
-        .overlay-screen { position: fixed; inset: 0; background: var(--space-dark); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
         .action-btn { padding: 15px 40px; background: var(--hacker-green); color: black; font-weight: bold; border: none; border-radius: 8px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 0 15px var(--hacker-green); margin-top: 20px; text-transform: uppercase; }
-        
         .stat-box { margin: 15px 0; color: white; border: 1px solid #1e293b; padding: 15px; border-radius: 10px; background: rgba(255,255,255,0.05); width: 250px; }
-        
-        #collection { display: flex; gap: 5px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
-        .item { width: 35px; height: 35px; background: #1e293b; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; opacity: 0.2; filter: grayscale(1); }
-        .item.unlocked { opacity: 1; filter: grayscale(0); border: 1px solid var(--hacker-green); box-shadow: 0 0 5px var(--hacker-green); }
+        #collection-end { display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+        .item { width: 35px; height: 35px; background: #1e293b; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; opacity: 0.2; }
+        .item.unlocked { opacity: 1; border: 1px solid var(--hacker-green); box-shadow: 0 0 5px var(--hacker-green); }
 
-        /* Estilo Botón Ko-fi */
-        .kofi-button {
-            margin-top: 25px;
-            display: inline-block;
-            background: var(--kofi-color);
-            color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            border: 1px solid white;
-            transition: 0.3s;
-            box-shadow: 0 0 10px rgba(41, 171, 224, 0.4);
-        }
-        .kofi-button:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--kofi-color); }
-
-        .lang-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; width: 100%; max-width: 350px; }
-        .lang-btn { background: #111827; border: 1px solid var(--hacker-green); color: white; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+        .lang-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; width: 100%; max-width: 380px; }
+        .lang-btn { background: #111827; border: 1px solid var(--hacker-green); color: white; padding: 12px 5px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-family: 'Courier New', monospace; transition: 0.3s; }
         .lang-btn:hover { background: var(--hacker-green); color: black; }
 
-        .credits { font-size: 0.7rem; color: #4b5563; margin-top: 25px; letter-spacing: 1px; }
+        .particle { position: absolute; pointer-events: none; background: var(--rank-color); width: 4px; height: 4px; border-radius: 50%; z-index: 100; }
+        
+        #unlock-desc { font-size: 0.85rem; color: #aaa; margin: 10px 40px; line-height: 1.4; font-style: italic; }
+        .hacker-alert { color: var(--hacker-green); font-family: 'Courier New', monospace; margin-top: 10px; font-size: 0.8rem; text-transform: uppercase; }
+
+        /* Timer de reparación */
+        #repair-timer-container { width: 200px; height: 4px; background: #333; margin-top: 10px; border-radius: 2px; overflow: hidden;}
+        #repair-timer-fill { height: 100%; background: var(--alert); width: 100%; transition: linear;}
     </style>
-<link rel="manifest" href="manifest.json">
 </head>
 <body>
 
     <canvas id="code-bg"></canvas>
 
-    <!-- PANTALLA DE IDIOMA -->
-    <div id="lang-screen" class="overlay-screen">
-        <h2 style="color: var(--hacker-green);">SELECT LANGUAGE</h2>
+    <div id="lang-screen" class="overlay-screen" style="display: flex;">
+        <h2 style="color: var(--hacker-green); letter-spacing: 2px;">SELECT INTERFACE</h2>
         <div class="lang-grid">
-            <button class="lang-btn" onclick="setLang('es')">Español</button>
-            <button class="lang-btn" onclick="setLang('en')">English</button>
-            <button class="lang-btn" onclick="setLang('ca')">Català</button>
-            <button class="lang-btn" onclick="setLang('fr')">Français</button>
-            <button class="lang-btn" onclick="setLang('de')">Deutsch</button>
-            <button class="lang-btn" onclick="setLang('pt')">Português</button>
-            <button class="lang-btn" onclick="setLang('zh')">中文</button>
-            <button class="lang-btn" onclick="setLang('ja')">日本語</button>
-            <button class="lang-btn" onclick="setLang('ru')">Русский</button>
-            <button class="lang-btn" onclick="setLang('ar')">العربية</button>
-            <button class="lang-btn" onclick="setLang('hi')">हिन्दी</button>
+            <button class="lang-btn" onclick="setLang('es')">ES</button>
+            <button class="lang-btn" onclick="setLang('en')">EN</button>
+            <button class="lang-btn" onclick="setLang('ca')">CA</button>
+            <button class="lang-btn" onclick="setLang('pt')">PT</button>
+            <button class="lang-btn" onclick="setLang('fr')">FR</button>
+            <button class="lang-btn" onclick="setLang('de')">DE</button>
+            <button class="lang-btn" onclick="setLang('zh')">ZH</button>
+            <button class="lang-btn" onclick="setLang('hi')">HI</button>
+            <button class="lang-btn" onclick="setLang('ar')">AR</button>
         </div>
-        <div class="credits">By CESIO and AGUACATINI49</div>
     </div>
 
-    <!-- PANTALLA DE INICIO -->
-    <div id="start-screen" class="overlay-screen" style="display: none;">
-        <h1 style="color: var(--hacker-green); letter-spacing: 4px;">ARCHITECT OS</h1>
-        <p id="t-instruction" style="max-width: 300px; line-height: 1.5;"></p>
+    <div id="start-screen" class="overlay-screen">
+        <div id="terminal-story">
+            <div class="typing" style="color: var(--hacker-green); font-weight: bold;">> INICIANDO PROTOCOLO ARCHITECT...</div>
+            <p id="t-story-body" style="line-height: 1.4; color: #ccc; margin: 15px 0;"></p>
+            <div style="color: var(--neon-pink); font-weight: bold;" id="t-goal">> OBJETIVO: Sabotaje de nodos.</div>
+            <div id="t-instruction" style="font-size: 0.8rem; margin-top: 10px; opacity: 0.7;"></div>
+        </div>
         <button id="t-start-btn" class="action-btn" onclick="startGame()"></button>
-        <div class="credits">By CESIO and AGUACATINI49</div>
     </div>
 
-    <!-- PANTALLA FINAL -->
-    <div id="end-screen" class="overlay-screen" style="display: none;">
+    <div id="error-screen" class="overlay-screen">
+        <h2 id="t-warn-title" style="color: var(--alert);">SISTEMA BLOQUEADO</h2>
+        <div id="repair-story" style="color: var(--hacker-green); font-size: 0.8rem; margin-bottom: 10px; max-width: 300px; border-left: 2px solid var(--hacker-green); padding-left: 10px;"></div>
+        <div id="repair-msg" style="font-size: 0.9rem; color: #ff3e3e; margin-top: 5px; font-weight: bold;">[!] RE-SINCRONIZA PARA EVITAR RASTREO COMPLETO</div>
+        <div id="repair-formula" style="font-size: 2.5rem; margin-top: 10px; color: var(--neon-pink); font-weight: bold;"></div>
+        <input type="number" id="repair-input" placeholder="00">
+        <div id="repair-timer-container"><div id="repair-timer-fill"></div></div>
+        <div id="post-repair-msg" class="hacker-alert" style="display:none;">> INTEGRIDAD RECUPERADA. PREPÁRATE PARA EL SALTO...</div>
+    </div>
+
+    <div id="unlock-screen" class="overlay-screen">
+        <h1 id="t-unlock-title" style="color: var(--neon-blue); margin: 0; font-size: 1.2rem;"></h1>
+        <div id="unlock-icon" class="unlock-anim">🔋</div>
+        <h2 id="unlock-name" style="color: white; margin: 10px 0; letter-spacing: 2px;"></h2>
+        <div id="unlock-desc"></div>
+        <button id="t-install-btn" class="action-btn" onclick="closeUnlock()" style="background: var(--neon-blue); color: white;"></button>
+    </div>
+
+    <div id="end-screen" class="overlay-screen">
         <h1 id="t-gameover" style="color: var(--alert);"></h1>
         <div class="stat-box">
-            <div id="t-final-rank-label" style="font-size: 0.8rem; color: #64748b;"></div>
-            <div id="final-rank" style="font-size: 1.5rem; font-weight: bold; margin: 5px 0;">-</div>
-            <hr style="border: 0; border-top: 1px solid #1e293b; margin: 10px 0;">
-            <div id="t-mods-label" style="font-size: 0.8rem; color: #64748b;"></div>
-            <div id="collection">
-                <div class="item">🔋</div><div class="item">🔥</div><div class="item">🛡️</div>
-                <div class="item">📡</div><div class="item">🧠</div><div class="item">🔫</div>
-            </div>
-            <hr style="border: 0; border-top: 1px solid #1e293b; margin: 10px 0;">
-            <div id="t-score-label" style="font-size: 0.8rem; color: #64748b;"></div>
-            <div id="final-score" style="font-size: 2rem; color: var(--hacker-green);">0</div>
+            <div id="t-final-rank-label"></div>
+            <div id="final-rank">-</div>
+            <hr style="border:0; border-top:1px solid #1e293b; margin:10px 0;">
+            <div id="t-mods-label"></div>
+            <div id="collection-end"></div>
+            <hr style="border:0; border-top:1px solid #1e293b; margin:10px 0;">
+            <div id="t-score-label"></div>
+            <div id="final-score">0</div>
         </div>
-        
         <button id="t-retry-btn" class="action-btn" onclick="location.reload()"></button>
-
-        <!-- BOTÓN KO-FI INCORPORADO -->
-        <a href="https://ko-fi.com/cesioaraya1" target="_blank" class="kofi-button">
-            ☕ <span id="t-kofi">Apoyar el proyecto</span>
-        </a>
-
-        <div class="credits">By CESIO and AGUACATINI49</div>
     </div>
 
     <div id="game">
-        <!-- (Resto del HUD y área de juego se mantiene igual) -->
+        <div id="combo-tag">X0</div>
         <div id="hud">
             <span id="rank-display"></span>
             <span>HACKS: <span id="phase">00</span></span>
         </div>
-
         <div id="construction-area">
             <div id="house-display">🛰️</div>
-            <div id="warning-msg" class="overlay-msg">
-                <span id="t-warn-title" style="font-size: 1.5rem;"></span>
-                <p id="t-warn-desc"></p>
-            </div>
-            <div id="success-msg" class="overlay-msg">
-                <span id="t-success-title" style="font-size: 1.5rem;"></span>
-                <p id="t-success-desc"></p>
-            </div>
+            <div id="visual-grid"></div>
         </div>
-
         <div id="timer-bar"><div id="timer-fill"></div></div>
         <div id="prob">? x ?</div>
-
         <div class="grid">
-            <button class="btn" onclick="check(0)"></button>
-            <button class="btn" onclick="check(1)"></button>
-            <button class="btn" onclick="check(2)"></button>
+            <button class="btn" onclick="check(0, event)"></button>
+            <button class="btn" onclick="check(1, event)"></button>
+            <button class="btn" onclick="check(2, event)"></button>
         </div>
-        
         <div id="error-dots" style="margin-top:15px; color:var(--alert); font-size:0.9rem; font-weight: bold;"></div>
     </div>
 
     <script>
+        let errorHistory = []; // Almacena los 3 fallos que terminan la partida
         const i18n = {
-            es: { kofi: "Invítame un café", inst: "Sabotea el sistema: Toca el resultado INCORRECTO para evadir el rastreo.", start: "Conectar Nodo", retry: "Reintentar Acceso", over: "CONEXIÓN INTERCEPTADA", rank: "RANGO FINAL", mods: "MÓDULOS RECUPERADOS", score: "HACKS EXITOSOS", warn_t: "⚠️ DETECTADO ⚠️", warn_d: "RESULTADO REAL EXPUESTO", succ_t: "✅ LIMPIEZA ✅", succ_d: "NODO ASEGURADO", track: "RASTREO", ranks: ["NOVATO", "HACKER", "MAESTRO", "ARCHITECT"] },
-            en: { kofi: "Buy me a coffee", inst: "Sabotage the system: Tap the INCORRECT result to evade tracking.", start: "Connect Node", retry: "Retry Access", over: "CONNECTION INTERCEPTED", rank: "FINAL RANK", mods: "RECOVERED MODULES", score: "SUCCESSFUL HACKS", warn_t: "⚠️ DETECTED ⚠️", warn_d: "REAL RESULT EXPOSED", succ_t: "✅ CLEANSED ✅", succ_d: "NODE SECURED", track: "TRACKING", ranks: ["NOVICE", "HACKER", "MASTER", "ARCHITECT"] },
-            ca: { kofi: "Convida'm a un cafè", inst: "Saboteja el sistema: Toca el resultat INCORRECTE per evadir el rastreig.", start: "Connectar Node", retry: "Reintentar Accés", over: "CONNEXIÓ INTERCEPTADA", rank: "RANG FINAL", mods: "MÒDULS RECUPERATS", score: "HACKS EXITOSOS", warn_t: "⚠️ DETECTAT ⚠️", warn_d: "RESULTAT REAL EXPOSAT", succ_t: "✅ NETEJA ✅", succ_d: "NODE ASSEGURAT", track: "RASTREIG", ranks: ["NOVATELL", "HACKER", "MESTRE", "ARCHITECT"] },
-            // (Puedes añadir "kofi: ..." a los demás idiomas si lo deseas)
+            es: { 
+                story: "Año 2084. La IA 'Architect' controla el mundo. Tu misión es infiltrarte en su núcleo. Para confundir a su firewall, debes elegir los datos que NO encajan.",
+                goal: "> OBJETIVO: Sabotaje de nodos.",
+                inst: "SABOTAJE: Toca el resultado INCORRECTO.", 
+                start: "CONECTAR NODO", 
+                retry: "REINTENTAR", 
+                over: "CONEXIÓN PERDIDA", 
+                rank: "RANGO FINAL", 
+                mods: "MÓDULOS", 
+                score: "HACKS", 
+                warn_t: "SISTEMA BLOQUEADO",
+                repair_txt: "> BRECHA DETECTADA. Re-encriptando paquetes...",
+                track: "RASTREO", 
+                ranks: ["NOVATO", "HACKER", "MAESTRO", "ARCHITECT"], 
+                unlock: "¡MÓDULO RECUPERADO!", 
+                install: "INSTALAR", 
+                itemNames: ["NÚCLEO ENERGÍA", "CÓDIGO ÍGNEO", "FIREWALL ALPHA", "RECEPTOR SAT", "IA CORTEX", "BOT DE ASALTO"],
+                itemDescs: [
+                            "Célula de plasma extraída de los servidores centrales de Architect.", 
+                            "Código malicioso de ejecución rápida diseñado para sobrecargar cortafuegos.", 
+                            "Capa de encriptación dinámica que oculta tu rastro en la red.", 
+                            "Enlace directo con la red orbital para interceptar paquetes de datos.", 
+                            "Fragmento de conciencia sintética que optimiza procesos cognitivos.", 
+                            "Unidad autónoma de asalto digital para purgar nodos de seguridad."
+                            ]
+            },
+            en: { 
+                story: "Year 2084. 'Architect' AI rules the world. Choose data that DOES NOT fit.",
+                goal: "> MISSION: Node Sabotage.",
+                inst: "SABOTAGE: Tap INCORRECT result.", 
+                start: "CONNECT", 
+                retry: "RETRY", 
+                over: "CONN LOST", 
+                rank: "RANK", 
+                mods: "MODULES", 
+                score: "HACKS", 
+                warn_t: "LOCKED", 
+                repair_txt: "> BREACH DETECTED. Re-encrypting...",
+                track: "TRACK", 
+                ranks: ["NOVICE", "HACKER", "MASTER", "ARCHITECT"], 
+                unlock: "MODULE FOUND!", 
+                install: "INSTALL", 
+                itemNames: ["CORE", "FIRE CODE", "FIREWALL", "SAT", "IA", "BOT"],
+                itemDescs: ["Energy", "Script", "Shield", "Antenna", "AI", "Bot"]
+            }
         };
 
-        let currentLang = 'es';
+        let currentLang = 'es', score = 0, alertLevel = 0, timer, repairTimer, isChecking = false;
+        let currentN1, currentN2, res, combo = 0, lastRank = 0;
+        let unlockedItems = [0,0,0,0,0,0];
+        const itemIcons = ["🔋", "🔥", "🛡️", "📡", "🧠", "🔫"];
+        const collectThresholds = [10, 20, 30, 40, 50, 60];
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         function setLang(l) {
-            currentLang = l;
-            const t = i18n[l] || i18n['en'];
+            currentLang = i18n[l] ? l : 'es';
+            const t = i18n[currentLang];
+            document.getElementById('t-story-body').innerText = t.story;
+            document.getElementById('t-goal').innerText = t.goal;
             document.getElementById('t-instruction').innerText = t.inst;
             document.getElementById('t-start-btn').innerText = t.start;
             document.getElementById('t-retry-btn').innerText = t.retry;
@@ -209,99 +254,156 @@
             document.getElementById('t-mods-label').innerText = t.mods;
             document.getElementById('t-score-label').innerText = t.score;
             document.getElementById('t-warn-title').innerText = t.warn_t;
-            document.getElementById('t-warn-desc').innerText = t.warn_d;
-            document.getElementById('t-success-title').innerText = t.succ_t;
-            document.getElementById('t-success-desc').innerText = t.succ_d;
-            if(t.kofi) document.getElementById('t-kofi').innerText = t.kofi;
-            
+            document.getElementById('t-unlock-title').innerText = t.unlock;
+            document.getElementById('t-install-btn').innerText = t.install;
             document.getElementById('lang-screen').style.display = 'none';
             document.getElementById('start-screen').style.display = 'flex';
         }
 
-        // --- LÓGICA DEL JUEGO (Se mantiene igual para no romper la funcionalidad) ---
-        const canvas = document.getElementById('code-bg');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        const drops = Array(Math.floor(canvas.width / 16)).fill(1);
-        function drawMatrix() {
-            ctx.fillStyle = "rgba(5, 10, 20, 0.15)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#00ff41"; ctx.font = "16px monospace";
-            drops.forEach((y, i) => {
-                ctx.fillText(Math.floor(Math.random()*2), i * 16, y * 16);
-                if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            });
-        }
-        setInterval(drawMatrix, 50);
-
-        let res, score = 0, alertLevel = 0, timer, isChecking = false;
-        const stages = ["🛰️", "📡", "🚀", "🛸", "👾", "☄️", "🌌", "👑"];
-        const collectThresholds = [10, 20, 30, 40, 50, 60];
-        let unlockedItems = JSON.parse(localStorage.getItem('arch_items')) || [0,0,0,0,0,0];
-
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(freq, type, duration, vol = 0.1) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + duration);
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function screenShake() {
+            const game = document.getElementById('game');
+            game.style.transform = `translate(${Math.random()*10-5}px, ${Math.random()*10-5}px)`;
+            setTimeout(() => game.style.transform = 'translate(0,0)', 50);
+        }
+
+        function createParticles(x, y) {
+            for(let i=0; i<8; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = x + 'px'; p.style.top = y + 'px';
+                document.body.appendChild(p);
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.random() * 50 + 20;
+                p.animate([
+                    { transform: 'translate(0,0)', opacity: 1 },
+                    { transform: `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`, opacity: 0 }
+                ], { duration: 500, easing: 'ease-out' }).onfinish = () => p.remove();
+            }
         }
 
         function startGame() {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('game').style.display = 'block';
+            
+            document.getElementById('repair-input').addEventListener('input', (e) => {
+                if(parseInt(e.target.value) === res) {
+                    clearInterval(repairTimer);
+                    const hackerAlert = document.getElementById('post-repair-msg');
+                    hackerAlert.style.display = 'block';
+                    playSound(1000, 'sine', 0.2, 0.3);
+                    setTimeout(() => {
+                        e.target.value = "";
+                        hackerAlert.style.display = 'none';
+                        document.getElementById('error-screen').style.display = 'none';
+                        if (alertLevel < 3) gen(); else gameOver();
+                    }, 800);
+                }
+            });
             updateAlertUI();
             gen();
         }
 
-        function updateRank() {
-            const t = i18n[currentLang] || i18n['en'];
-            const rankNames = t.ranks;
-            let rankIdx = 0;
-            if(score >= 50) rankIdx = 3;
-            else if(score >= 30) rankIdx = 2;
-            else if(score >= 15) rankIdx = 1;
+        function check(idx, event) {
+            if(isChecking) return;
+            isChecking = true;
+            clearInterval(timer);
+            let btns = document.querySelectorAll('.btn');
             
-            const colors = ["#00ff41", "#00d4ff", "#ffea00", "#ff007f"];
-            document.getElementById('rank-display').innerText = "NV." + (rankIdx+1) + " " + rankNames[rankIdx];
-            document.getElementById('rank-display').style.color = colors[rankIdx];
-            document.documentElement.style.setProperty('--rank-color', colors[rankIdx]);
-            return "NV." + (rankIdx+1) + " " + rankNames[rankIdx];
+            if (idx !== -1 && parseInt(btns[idx].innerText) !== res) {
+                combo++; score++;
+                screenShake();
+                if(event) createParticles(event.clientX, event.clientY);
+                const cTag = document.getElementById('combo-tag');
+                cTag.innerText = `X${combo}`;
+                cTag.style.opacity = combo > 1 ? 1 : 0;
+                if(combo >= 5) document.getElementById('game').classList.add('overclock-active');
+                playSound(800 + (combo * 20), 'square', 0.1);
+                
+                let itemIdx = collectThresholds.indexOf(score);
+                if(itemIdx !== -1) showUnlock(itemIdx);
+                else {
+                    document.getElementById('phase').innerText = score.toString().padStart(2, '0');
+                    gen();
+                }
+            } else {
+                handleError();
+            }
+        }
+
+        function handleError() {
+            combo = 0;
+            document.getElementById('game').classList.remove('overclock-active');
+    
+            // REGISTRO DEL ERROR
+            errorHistory.push(`${currentN1} × ${currentN2} = ${res}`);
+    
+            alertLevel++;
+            playSound(80, 'sawtooth', 0.4);
+            updateAlertUI();
+    
+            document.getElementById('repair-story').innerText = i18n[currentLang].repair_txt;
+            document.getElementById('repair-formula').innerText = `${currentN1} × ${currentN2} = ${res}`;
+            document.getElementById('error-screen').style.display = 'flex';
+            document.getElementById('repair-input').value = "";
+            document.getElementById('repair-input').focus();
+
+            let repairTimeLeft = 100;
+            const fill = document.getElementById('repair-timer-fill');
+            clearInterval(repairTimer);
+            repairTimer = setInterval(() => {
+                repairTimeLeft -= 1;
+                fill.style.width = repairTimeLeft + "%";
+                if(repairTimeLeft <= 0) {
+                    clearInterval(repairTimer);
+                    document.getElementById('error-screen').style.display = 'none';
+                    if (alertLevel < 3) gen(); else gameOver();
+                }
+            }, 100);
         }
 
         function gen() {
             isChecking = false;
-            document.getElementById('warning-msg').style.display = 'none';
-            document.getElementById('success-msg').style.display = 'none';
             updateRank();
-            let maxRange = score < 10 ? 5 : 10;
-            let n1 = Math.floor(Math.random() * maxRange) + 1;
-            let n2 = Math.floor(Math.random() * 10) + 1;
-            res = n1 * n2;
-            document.getElementById('prob').innerText = `${n1} × ${n2}`;
+            let nA = Math.floor(Math.random() * 8) + 2; 
+            let nB = Math.floor(Math.random() * 8) + 2;
+            currentN1 = Math.min(nA, nB);
+            currentN2 = Math.max(nA, nB);
+            res = currentN1 * currentN2;
+            document.getElementById('prob').innerText = `${currentN1} × ${currentN2}`;
+            
+            const grid = document.getElementById('visual-grid');
+            grid.style.gridTemplateColumns = `repeat(${currentN2}, 1fr)`;
+            grid.innerHTML = '';
+            for(let i=0; i < (currentN1 * currentN2); i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                grid.appendChild(dot);
+            }
+
             let btns = document.querySelectorAll('.btn');
             let realPos = Math.floor(Math.random() * 3);
             btns.forEach((b, i) => {
-                b.disabled = false;
-                b.classList.remove('alien-logic', 'correct-sabotage');
                 if (i === realPos) b.innerText = res;
-                else {
-                    let offset = (Math.floor(Math.random() * 3) + 1) * (Math.random() > 0.5 ? 1 : -1);
-                    let fake = res + offset;
-                    if (fake <= 0 || fake === res) fake = res + 5;
-                    b.innerText = fake;
-                }
+                else b.innerText = res + (Math.random() > 0.5 ? currentN1 : -1);
             });
             startTimer();
         }
 
         function startTimer() {
-            let limit = Math.max(0.8, 6 - (score * 0.12)); 
+            let limit = Math.max(1.5, 8 - (score * 0.05));
             let current = 100;
             clearInterval(timer);
             timer = setInterval(() => {
@@ -311,61 +413,104 @@
             }, 100);
         }
 
-        function check(idx) {
-            if(isChecking) return;
-            isChecking = true;
-            clearInterval(timer);
-            let btns = document.querySelectorAll('.btn');
-            if (idx !== -1 && parseInt(btns[idx].innerText) !== res) {
-                score++;
-                collectThresholds.forEach((t, i) => {
-                    if(score === t) {
-                        unlockedItems[i] = 1;
-                        localStorage.setItem('arch_items', JSON.stringify(unlockedItems));
-                        playSound(1200, 'sine', 0.5, 0.2);
-                    }
-                });
-                playSound(800 + (Math.min(score, 40) * 10), 'square', 0.1);
-                btns[idx].classList.add('correct-sabotage');
-                document.getElementById('phase').innerText = score.toString().padStart(2, '0');
-                document.getElementById('house-display').innerText = stages[Math.min(Math.floor(score/7), stages.length-1)];
-                if (score > 0 && score % 15 === 0) levelUp();
-                else setTimeout(gen, 300);
-            } else {
-                alertLevel++;
-                playSound(80, 'sawtooth', 0.6, 0.2);
-                updateAlertUI();
-                document.getElementById('warning-msg').style.display = 'flex';
-                btns.forEach(b => { if(parseInt(b.innerText) === res) b.classList.add('alien-logic'); b.disabled = true; });
-                if (alertLevel >= 3) setTimeout(gameOver, 1500);
-                else setTimeout(gen, 1500);
-            }
-        }
-
-        function levelUp() {
-            playSound(523, 'sine', 0.2);
-            setTimeout(() => playSound(783, 'sine', 0.4), 300);
-            document.getElementById('success-msg').style.display = 'flex';
-            alertLevel = Math.max(0, alertLevel - 1);
-            updateAlertUI();
-            setTimeout(gen, 1500);
+        function updateRank() {
+            const t = i18n[currentLang];
+            let rankIdx = score >= 50 ? 3 : score >= 30 ? 2 : score >= 15 ? 1 : 0;
+            lastRank = rankIdx;
+            const colors = ["#00ff41", "#00d4ff", "#ffea00", "#ff007f"];
+            document.getElementById('rank-display').innerText = "NV." + (rankIdx+1) + " " + t.ranks[rankIdx];
+            document.getElementById('rank-display').style.color = colors[rankIdx];
+            document.documentElement.style.setProperty('--rank-color', colors[rankIdx]);
         }
 
         function updateAlertUI() {
-            const t = i18n[currentLang] || i18n['en'];
             let dots = "";
-            for(let i=0; i<3; i++) dots += i < alertLevel ? "[X] " : "[ ] ";
-            document.getElementById('error-dots').innerText = t.track + ": " + dots;
+            for(let i=0; i<3; i++) dots += i < alertLevel ? "● " : "○ ";
+            document.getElementById('error-dots').innerText = "RASTREO: " + dots;
+        }
+
+        function showUnlock(idx) {
+            unlockedItems[idx] = 1;
+            document.getElementById('unlock-icon').innerText = itemIcons[idx];
+            document.getElementById('unlock-name').innerText = i18n[currentLang].itemNames[idx];
+            document.getElementById('unlock-desc').innerText = i18n[currentLang].itemDescs[idx];
+            document.getElementById('unlock-screen').style.display = 'flex';
+        }
+
+        function closeUnlock() {
+            document.getElementById('unlock-screen').style.display = 'none';
+            document.getElementById('phase').innerText = score.toString().padStart(2, '0');
+            gen();
         }
 
         function gameOver() {
+            clearInterval(timer);
+            clearInterval(repairTimer);
             document.getElementById('game').style.display = 'none';
+            document.getElementById('error-screen').style.display = 'none';
             document.getElementById('end-screen').style.display = 'flex';
+
+            // 1. Mostrar total de Hacks
             document.getElementById('final-score').innerText = score;
-            document.getElementById('final-rank').innerText = updateRank();
-            const items = document.querySelectorAll('.item');
-            unlockedItems.forEach((u, i) => { if(u) items[i].classList.add('unlocked'); });
+
+            // 2. Mostrar Rango Final alcanzado
+            document.getElementById('final-rank').innerText = i18n[currentLang].ranks[lastRank];
+
+            // 3. Generar resumen de objetos recuperados
+            const collectionContainer = document.getElementById('collection-end');
+            collectionContainer.innerHTML = ''; // Limpiar previo
+
+            unlockedItems.forEach((isUnlocked, idx) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = isUnlocked ? 'item unlocked' : 'item';
+                itemDiv.innerText = itemIcons[idx];
+                collectionContainer.appendChild(itemDiv);
+            });
+
+            // 4. NUEVO: Resumen de Errores que causaron la desconexión
+            const statBox = document.querySelector('.stat-box');
+    
+            // Eliminar log previo si existe (para reintentos sin recargar página)
+            const oldLog = statBox.querySelector('.error-summary-log');
+            if(oldLog) oldLog.remove();
+
+            const errorLog = document.createElement('div');
+            errorLog.className = "error-summary-log";
+            errorLog.style.marginTop = "15px";
+            errorLog.style.fontSize = "0.7rem";
+            errorLog.style.textAlign = "left";
+            errorLog.style.color = "var(--alert)";
+            errorLog.style.borderTop = "1px solid #1e293b";
+            errorLog.style.paddingTop = "10px";
+    
+            let errorHTML = `<div style="color: #666; margin-bottom: 5px; font-weight: bold;">> LOG DE FALLOS CRÍTICOS:</div>`;
+    
+            // Solo mostrar si hubo errores registrados
+            if (errorHistory.length > 0) {
+                errorHistory.forEach((err, i) => {
+                    errorHTML += `<div style="margin-bottom: 2px; font-family: monospace;">[SABOTAJE_FALLIDO_0${i+1}]: ${err}</div>`;
+                });
+            } else {
+                errorHTML += `<div>NO SE DETECTARON BRECHAS.</div>`;
+            }
+    
+            errorLog.innerHTML = errorHTML;
+            statBox.appendChild(errorLog);
         }
+
+        const canvas = document.getElementById('code-bg');
+        const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = resize; resize();
+        const drops = new Array(Math.floor(canvas.width / 20)).fill(0);
+        function draw() {
+            ctx.fillStyle = 'rgba(5,10,20,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = '#0f0'; drops.forEach((y, i) => {
+                ctx.fillText(String.fromCharCode(Math.random()*128), i*20, y*20);
+                if(y*20 > canvas.height && Math.random() > 0.975) drops[i] = 0; else drops[i]++;
+            });
+        }
+        setInterval(draw, 50);
     </script>
 </body>
 </html>
